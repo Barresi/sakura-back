@@ -1,4 +1,9 @@
 {
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true,
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
