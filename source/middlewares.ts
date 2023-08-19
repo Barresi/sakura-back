@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { Request, Response, NextFunction } from "express";
 import pinoHttp from "pino-http";
 import Logger from "./clients/logger";
 
@@ -15,4 +15,14 @@ const expressLogger = pinoHttp({
 
 export function preMiddlewares() {
   return [expressLogger];
+}
+
+// - - - - - - //
+
+function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+  res.status(500).json({ msg: err.message });
+}
+
+export function postMiddlewares() {
+  return [errorHandler];
 }

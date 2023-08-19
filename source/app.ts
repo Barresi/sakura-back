@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import config from "config";
 
 import Logger from "./clients/logger";
-import { preMiddlewares } from "./middlewares";
+import { postMiddlewares, preMiddlewares } from "./middlewares";
 import api from "./api/router";
 
 async function main() {
@@ -24,6 +24,9 @@ async function main() {
 
   // apply api routing
   app.use("/api", api);
+
+  // apply post-route middlewares
+  app.use(postMiddlewares());
 
   // run app
   app.listen(config.get("deploy.port"));
