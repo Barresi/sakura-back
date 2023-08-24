@@ -6,4 +6,7 @@ export default {
   database: {
     logs: process.env.DB_LOGS,
   },
+  auth: {
+    secret: process.env.SECRET,
+  },
 };
