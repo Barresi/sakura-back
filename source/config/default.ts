@@ -7,6 +7,10 @@ export default {
     logs: process.env.DB_LOGS,
   },
   auth: {
-    secret: process.env.SECRET,
+    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+    refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
+  },
+  redis: {
+    url: process.env.REDIS_URL,
   },
 };
