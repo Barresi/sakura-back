@@ -52,6 +52,9 @@ export default {
 
     const userWithoutPassword = { id: user.id, email: user.email };
 
+    res.cookie("accessToken", accessToken, { maxAge: 900000, httpOnly: true });
+    res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
+
     res.json({ accessToken, refreshToken, userWithoutPassword });
   },
 
@@ -74,6 +77,8 @@ export default {
 
     const newAccessToken = generateAccessToken(payload.userId);
 
+    res.cookie("accessToken", newAccessToken, { maxAge: 900000, httpOnly: true });
+
     res.json({ accessToken: newAccessToken });
   },
 
@@ -91,12 +96,14 @@ export default {
 
     await deleteRefreshToken(payload.userId);
 
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
     res.sendStatus(204);
   },
 
   protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
+    const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
       return res.sendStatus(401);

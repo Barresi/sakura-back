@@ -12,7 +12,7 @@ client.on("error", (error: Error) => {
 });
 
 export const setRefreshToken = async (userId: number, refreshToken: string) => {
-  await client.setex(`refresh_token:${userId}`, 604800, refreshToken);
+  await client.setex(`refresh_token:${userId}`, 86400, refreshToken);
 };
 
 export const getRefreshToken = async (userId: number) => {
