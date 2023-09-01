@@ -6,7 +6,7 @@ export default {
   create: function (email: string, hashedPassword: string) {
     return db.user.create({ data: { email, password: hashedPassword } });
   },
-  getViaEmail: async function (email: string) {
+  getViaEmail: function (email: string) {
     return db.user.findUnique({ where: { email } });
   },
   getById: async function getById(userId: number) {

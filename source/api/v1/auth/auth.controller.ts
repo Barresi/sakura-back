@@ -7,7 +7,7 @@ import {
   verifyAccessToken,
   verifyRefreshToken,
 } from "./jwt";
-import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./redis";
+import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 
 export default {
   signup: async function signup(req: Request, res: Response) {
