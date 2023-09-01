@@ -4,13 +4,13 @@ import config from "../../../config/default";
 
 export const generateAccessToken = (userId: number): string => {
   return jwt.sign({ userId }, String(config.auth.accessTokenSecret), {
-    expiresIn: "3m",
+    expiresIn: "5m",
   });
 };
 
 export const generateRefreshToken = (userId: number): string => {
   return jwt.sign({ userId }, String(config.auth.refreshTokenSecret), {
-    expiresIn: "1d",
+    expiresIn: "30d",
   });
 };
 

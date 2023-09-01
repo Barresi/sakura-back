@@ -25,9 +25,12 @@ export const getRefreshToken = async (userId: number) => {
   }
 };
 
-export const deleteRefreshToken = async (userId: number) => {
+export const deleteRefreshToken = async (userId: number, refreshToken: string) => {
   try {
-    await client.del(`refresh_token:${userId}`);
+    const storedRefreshToken = await client.get(`refresh_token:${userId}`);
+    if (storedRefreshToken === refreshToken) {
+      await client.del(`refresh_token:${userId}`);
+    }
   } catch (error) {
     console.error("Error deleting refresh token:", error);
   }

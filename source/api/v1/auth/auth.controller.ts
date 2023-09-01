@@ -62,39 +62,44 @@ export default {
     const refreshToken = req.body.refreshToken;
 
     if (!refreshToken) {
-      return res.sendStatus(401);
+      return res.status(401).json({ message: "No refresh token provided" });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Invalid refresh token" });
     }
 
     const storedRefreshToken = await getRefreshToken(payload.userId);
     if (storedRefreshToken !== refreshToken) {
-      return res.status(401).json({ error: "Invalid refresh token" });
+      return res.status(403).json({ error: "Invalid refresh token" });
     }
 
     const newAccessToken = generateAccessToken(payload.userId);
+    const newRefreshToken = generateRefreshToken(payload.userId);
 
-    // res.cookie("accessToken", newAccessToken, { maxAge: 900000, httpOnly: true });
+    await setRefreshToken(payload.userId, newRefreshToken);
+    await deleteRefreshToken(payload.userId, refreshToken);
 
-    res.json({ accessToken: newAccessToken });
+    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
+    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
+
+    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
   logout: async function logout(req: Request, res: Response) {
     const refreshToken = req.body.refreshToken;
 
     if (!refreshToken) {
-      return res.sendStatus(400);
+      return res.status(401).json({ message: "No refresh token provided" });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.sendStatus(401);
+      return res.status(403).json({ message: "Invalid refresh token" });
     }
 
-    await deleteRefreshToken(payload.userId);
+    await deleteRefreshToken(payload.userId, refreshToken);
 
     // res.clearCookie("accessToken");
     // res.clearCookie("refreshToken");
@@ -107,12 +112,14 @@ export default {
     const accessToken = authHeader && authHeader.split(" ")[1];
 
     if (!accessToken) {
-      return res.sendStatus(401);
+      return res.status(401).json({ message: "No access token provided" });
     }
 
     const payload = verifyAccessToken(accessToken);
     if (!payload || typeof payload.userId !== "number") {
-      return res.sendStatus(403);
+      return res.status(403).json({
+        error: "Access token expired. Please refresh your access token or log in again.",
+      });
     }
 
     const user = await User.getById(payload.userId);
