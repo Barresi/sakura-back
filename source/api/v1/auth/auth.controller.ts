@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
 import User from "@src/data/user";
@@ -59,7 +58,7 @@ export default {
   },
 
   token: async function token(req: Request, res: Response) {
-    const refreshToken = req.body.refreshToken;
+    const { refreshToken } = req.body;
 
     if (!refreshToken) {
       return res.status(401).json({ message: "No refresh token provided" });
@@ -88,7 +87,7 @@ export default {
   },
 
   logout: async function logout(req: Request, res: Response) {
-    const refreshToken = req.body.refreshToken;
+    const { refreshToken } = req.body;
 
     if (!refreshToken) {
       return res.status(401).json({ message: "No refresh token provided" });
