@@ -3,7 +3,7 @@ import { JwtPayload } from "jsonwebtoken";
 import config from "config";
 
 export const generateAccessToken = (userId: number): string => {
-  return jwt.sign({ userId }, String(config.get("auth.acessTokenSecret")), {
+  return jwt.sign({ userId }, String(config.get("auth.accessTokenSecret")), {
     expiresIn: "5m",
   });
 };
