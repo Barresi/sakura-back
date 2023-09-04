@@ -14,13 +14,13 @@ services:
     ports:
       - "5400:5432"
 
-#  redis:
-#    image: redis:7.2-rc2
-#    container_name: "sakura-redis"
-#    command: >
-#      --requirepass localpass
-#    ports:
-#      - "6300:6379"
+  redis:
+    image: redis:7.2-rc2
+    container_name: "sakura-redis"
+    command: >
+      --requirepass localpass
+    ports:
+      - "6300:6379"
 
   adminer:
     image: adminer
