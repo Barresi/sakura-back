@@ -8,6 +8,9 @@ import Logger from "./clients/logger";
 import { postMiddlewares, preMiddlewares } from "./middlewares";
 import api from "./api/router";
 
+// activate sockets
+import "@src/sockets/messages.socket";
+
 async function main() {
   // init app instance
   const app = express();
@@ -29,7 +32,7 @@ async function main() {
   app.use(postMiddlewares());
 
   // run app
-  app.listen(config.get("deploy.port"));
+  app.listen(config.get("deploy.expressPort"));
   Logger.instance.info("\\|/ Sakura API is ready \\|/");
 }
 
