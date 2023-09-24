@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import pinoHttp from "pino-http";
-import Logger from "./clients/logger";
-import { ZodError } from "zod";
+import { Request, Response, NextFunction } from 'express';
+import pinoHttp from 'pino-http';
+import { ZodError } from 'zod';
+
+import Logger from './clients/logger';
 
 const logger = Logger.instance;
 const expressLogger = pinoHttp({

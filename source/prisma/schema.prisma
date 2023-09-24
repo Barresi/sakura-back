@@ -24,15 +24,16 @@ model User {
   role      Role         @default(USER)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  friends   Friendship[] @relation("Friends")
-  friended  Friendship[] @relation("Friended")
+  friends  Friend[] @relation("UserToFriends")
+  friendOf Friend[] @relation("FriendToFriends")
 }
 
-model Friendship {
-  id        Int      @id @default(autoincrement())
-  from      User     @relation("Friends", fields: [fromId], references: [id])
-  fromId    Int
-  to        User     @relation("Friended", fields: [toId], references: [id])
-  toId      Int
-  createdAt DateTime @default(now())
-}
+model Friend {
+id         Int      @id @default(autoincrement())
+userId     Int
+friendId   Int
+status     String
+createdAt  DateTime @default(now())
+updatedAt  DateTime @updatedAt
+user       User     @relation("UserToFriends", fields: [userId], references: [id])
+friend     User     @relation("FriendToFriends", fields: [friendId], references: [id])

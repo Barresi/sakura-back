@@ -1,5 +1,6 @@
-import Redis from "@src/clients/redis";
-import config from "config";
+import config from 'config';
+
+import Redis from '@src/clients/redis';
 
 const redis = Redis.instance;
 
@@ -12,7 +13,7 @@ export const getRefreshToken = async (userId: number) => {
     const refreshToken = await redis.get(`refresh_token:${userId}`);
     return refreshToken;
   } catch (error) {
-    console.error("Error getting refresh token:", error);
+    console.error('Error getting refresh token:', error);
     return null;
   }
 };
@@ -24,6 +25,6 @@ export const deleteRefreshToken = async (userId: number, refreshToken: string) =
       await redis.del(`refresh_token:${userId}`);
     }
   } catch (error) {
-    console.error("Error deleting refresh token:", error);
+    console.error('Error deleting refresh token:', error);
   }
 };
