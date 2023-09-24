@@ -1,13 +1,15 @@
-import { Request, Response } from "express";
-import { genSalt, hash, compare } from "bcrypt";
-import User from "@src/data/user";
+import { genSalt, hash, compare } from 'bcrypt';
+import { Request, Response } from 'express';
+
+import User from '@src/data/user';
+
+import { setRefreshToken, deleteRefreshToken, getRefreshToken } from './auth.tokens';
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
-} from "./jwt";
-import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
+} from './jwt';
 
 export default {
   signup: async function signup(req: Request, res: Response) {
@@ -21,7 +23,7 @@ export default {
     */
 
     const existingUser = await User.getViaEmail(email);
-    if (existingUser) throw new Error("Пользователь с этим email уже существует");
+    if (existingUser) throw new Error('Пользователь с этим email уже существует');
 
     //if (!passwordRegex.test(password)) throw new Error("Пароль слишком слабый");
 
@@ -36,12 +38,12 @@ export default {
 
     const user = await User.getViaEmail(email);
     if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     const passwordMatch = await compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     const accessToken = generateAccessToken(user.id);
@@ -61,17 +63,17 @@ export default {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(401).json({ message: "No refresh token provided" });
+      return res.status(401).json({ message: 'No refresh token provided' });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.status(403).json({ message: "Invalid refresh token" });
+      return res.status(403).json({ message: 'Invalid refresh token' });
     }
 
     const storedRefreshToken = await getRefreshToken(payload.userId);
     if (storedRefreshToken !== refreshToken) {
-      return res.status(403).json({ error: "Invalid refresh token" });
+      return res.status(403).json({ error: 'Invalid refresh token' });
     }
 
     const newAccessToken = generateAccessToken(payload.userId);
@@ -90,12 +92,12 @@ export default {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(401).json({ message: "No refresh token provided" });
+      return res.status(401).json({ message: 'No refresh token provided' });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.status(403).json({ message: "Invalid refresh token" });
+      return res.status(403).json({ message: 'Invalid refresh token' });
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
@@ -107,23 +109,23 @@ export default {
   },
 
   protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
+    const authHeader = req.headers['authorization'];
+    const accessToken = authHeader && authHeader.split(' ')[1];
 
     if (!accessToken) {
-      return res.status(401).json({ message: "No access token provided" });
+      return res.status(401).json({ message: 'No access token provided' });
     }
 
     const payload = verifyAccessToken(accessToken);
-    if (!payload || typeof payload.userId !== "number") {
+    if (!payload || typeof payload.userId !== 'number') {
       return res.status(403).json({
-        error: "Access token expired. Please refresh your access token or log in again.",
+        error: 'Access token expired. Please refresh your access token or log in again.',
       });
     }
 
     const user = await User.getById(payload.userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.json({ user });

@@ -1,16 +1,16 @@
-import jwt from "jsonwebtoken";
-import { JwtPayload } from "jsonwebtoken";
-import config from "config";
+import config from 'config';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+
 
 export const generateAccessToken = (userId: number): string => {
-  return jwt.sign({ userId }, String(config.get("auth.accessTokenSecret")), {
-    expiresIn: "5m",
+  return jwt.sign({ userId }, String(config.get('auth.accessTokenSecret')), {
+    expiresIn: '5m',
   });
 };
 
 export const generateRefreshToken = (userId: number): string => {
-  return jwt.sign({ userId }, String(config.get("auth.refreshTokenSecret")), {
-    expiresIn: "30d",
+  return jwt.sign({ userId }, String(config.get('auth.refreshTokenSecret')), {
+    expiresIn: '30d',
   });
 };
 
@@ -18,7 +18,7 @@ export const verifyAccessToken = (token: string): JwtPayload | null => {
   try {
     const payload = jwt.verify(
       token,
-      String(config.get("auth.accessTokenSecret"))
+      String(config.get('auth.accessTokenSecret'))
     ) as JwtPayload;
     return payload;
   } catch (error) {
@@ -30,7 +30,7 @@ export const verifyRefreshToken = (token: string): JwtPayload | null => {
   try {
     const payload = jwt.verify(
       token,
-      String(config.get("auth.refreshTokenSecret"))
+      String(config.get('auth.refreshTokenSecret'))
     ) as JwtPayload;
     return payload;
   } catch (error) {

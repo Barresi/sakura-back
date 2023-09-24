@@ -1,4 +1,4 @@
-import pino from "pino";
+import pino from 'pino';
 
 export default class Logger {
   private static _instance: ReturnType<typeof pino> = pino({});

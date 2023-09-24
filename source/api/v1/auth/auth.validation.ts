@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
 export default {
   signup: function (req: Request, res: Response, next: NextFunction) {
