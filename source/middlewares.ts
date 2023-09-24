@@ -24,10 +24,10 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
   req.log.error(err);
 
   if (err instanceof ZodError) {
-    res.status(404).json({ msg: "Некорректные данные" });
+    res.status(404).json({ message: "Некорректные данные" });
   }
 
-  res.status(500).json({ msg: err.message });
+  res.status(500).json({ message: "Internal server error" });
 }
 
 export function postMiddlewares() {

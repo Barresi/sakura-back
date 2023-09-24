@@ -1,18 +1,21 @@
 import { z } from "zod";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
-export default {
-  signup: function (req: Request, res: Response, next: NextFunction) {
-    // https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
-    const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
+export function signup(req: Request, res: Response) {
+  // https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
+  const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
 
-    const schema = z.object({
-      email: z.string().email().trim(),
-      password: z.string().regex(passwordRegex).trim(),
-    });
+  const schema = z.object({
+    username: z.string().optional(),
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email().trim(),
+    password: z.string().regex(passwordRegex).trim(),
+  });
 
-    schema.parse(req.body);
-
-    next();
-  },
-};
+  try {
+    return schema.parse(req.body);
+  } catch (error: unknown) {
+    res.status(404).json({ message: "Invalid user data" });
+  }
+}
