@@ -7,9 +7,6 @@ import swaggerDef from './swaggerDef';
 
 const v1 = Router();
 
-
-
-
 v1.use('/auth', auth);
 v1.use('/friends', friends);
 v1.use('/api-docs', swaggerUi.serve);

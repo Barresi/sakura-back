@@ -1,5 +1,3 @@
-import config from 'config';
-
 import Redis from '@src/clients/redis';
 
 const redis = Redis.instance;

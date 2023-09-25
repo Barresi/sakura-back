@@ -16,7 +16,7 @@ export type CustomNextFunction = (
 ) => void;
 
 export default function wrap<T>(
-  fn: (req: RequestWithUserId, res: Response, next?: CustomNextFunction) => Promise<T>
+  fn: (req: RequestWithUserId, res: Response, next: CustomNextFunction) => Promise<T>
 ) {
   return (req: RequestWithUserId, res: Response, next: ExpressNextFunction) => {
     fn(req, res, next).catch(next);

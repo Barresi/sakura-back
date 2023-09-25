@@ -6,9 +6,10 @@ import Friends from '@src/data/friends';
 
 const db = Database.instance;
 
-
-
-export async function addFriend(req: RequestWithUserId, res: Response): Promise<Response> {
+export async function addFriend(
+  req: RequestWithUserId,
+  res: Response
+): Promise<Response> {
   const userId: number = req.userId!;
   const { friendId } = req.body;
 
@@ -20,7 +21,9 @@ export async function addFriend(req: RequestWithUserId, res: Response): Promise<
     }
 
     if (userId === friendId) {
-      return res.status(400).json({ error: 'Невозможно добавить самого себя в качестве друга' });
+      return res
+        .status(400)
+        .json({ error: 'Невозможно добавить самого себя в качестве друга' });
     }
 
     if (await Friends.friendRequestAlreadyExists(userId, friendId)) {
