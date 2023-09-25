@@ -73,5 +73,5 @@ export default {
       console.error('Error fetching user by ID:', error);
       throw new Error('Failed to fetch user by ID');
     }
-  }
+  },
 };

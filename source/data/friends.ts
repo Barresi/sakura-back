@@ -45,7 +45,6 @@ export default {
           status: 'accepted',
         },
       });
-
     } catch (error) {
       console.error('Error when accepting a friend request:', error);
       throw new Error('Failed to accept friend request');
@@ -75,8 +74,8 @@ export default {
       await db.friend.deleteMany({
         where: {
           OR: [
-            {userId: userId, friendId: friendId},
-            {userId: friendId, friendId: userId},
+            { userId: userId, friendId: friendId },
+            { userId: friendId, friendId: userId },
           ],
         },
       });
@@ -84,5 +83,5 @@ export default {
       console.error('Ошибка при удалении друга:', error);
       throw new Error('Не удалось удалить друга');
     }
-  }
+  },
 };
