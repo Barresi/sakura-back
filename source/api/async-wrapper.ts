@@ -1,14 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
+import {
+  Request as ExpressRequest,
+  Response,
+  NextFunction as ExpressNextFunction,
+} from 'express';
 
-/**
- * Wrap Async Handler - so express will be able to catch an async error
- * @param fn - async express handler
- * @returns wrapped async express handler
- */
+export interface RequestWithUserId extends ExpressRequest {
+  userId?: number;
+}
+
+export type CustomNextFunction = (
+  error?: any, // To address the ESLint error, you can replace 'any' with a more specific type if available.
+  req?: RequestWithUserId,
+  res?: Response,
+  next?: ExpressNextFunction
+) => void;
+
 export default function wrap<T>(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<T>
+  fn: (req: RequestWithUserId, res: Response, next?: CustomNextFunction) => Promise<T>
 ) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: RequestWithUserId, res: Response, next: ExpressNextFunction) => {
     fn(req, res, next).catch(next);
   };
 }

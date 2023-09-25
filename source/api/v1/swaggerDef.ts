@@ -8,6 +8,15 @@ const options: swaggerJsdoc.Options = {
       version: '0.0.1',
       description: 'Sakura API',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
   apis: ['./source/api/v1/**/*.swagger.ts'],
 };

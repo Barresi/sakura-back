@@ -6,7 +6,7 @@ import express from 'express';
 
 import api from './api/router';
 import Logger from './clients/logger';
-import { postMiddlewares, preMiddlewares } from './middlewares';
+import { postMiddlewares, preMiddlewares } from './middleware/middlewares';
 
 async function main() {
   // init app instance
