@@ -1,27 +1,29 @@
-import { Request, Response } from "express";
-import { genSalt, hash, compare } from "bcrypt";
-import { signup as validateSignup } from "./auth.validation";
-import User from "@src/data/user";
+import { genSalt, hash, compare } from 'bcrypt';
+import { Request, Response } from 'express';
+
+import User from '@src/data/user';
+
+import { setRefreshToken, deleteRefreshToken, getRefreshToken } from './auth.tokens';
+import { signup as validateSignup } from './auth.validation';
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
-} from "./jwt";
-import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
+} from './jwt';
 
 export default {
   signup: async function signup(req: Request, res: Response) {
 
     const body = validateSignup(req, res);
     if (!body) {
-      res.status(404).json({ message: "Invalid user data" });
+      res.status(404).json({ message: 'Invalid user data' });
       return;
     }
 
     const existingUser = await User.getViaEmail(body.email);
     if (existingUser) {
-      res.status(409).json({ message: "Этот email уже зарегестрирован" });
+      res.status(409).json({ message: 'Этот email уже зарегестрирован' });
       return;
     }
 
@@ -36,12 +38,12 @@ export default {
 
     const user = await User.getViaEmail(email);
     if (!user) {
-      return res.status(401).json({ msg: "Неверный email или пароль" });
+      return res.status(401).json({ msg: 'Неверный email или пароль' });
     }
 
     const passwordMatch = await compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ msg: "Неверный email или пароль" });
+      return res.status(401).json({ msg: 'Неверный email или пароль' });
     }
 
     const accessToken = generateAccessToken(user.id);
@@ -61,17 +63,17 @@ export default {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(401).json({ msg: "Refresh token не предоставлен" });
+      return res.status(401).json({ msg: 'Refresh token не предоставлен' });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.status(403).json({ msg: "Неверный refresh token" });
+      return res.status(403).json({ msg: 'Неверный refresh token' });
     }
 
     const storedRefreshToken = await getRefreshToken(payload.userId);
     if (storedRefreshToken !== refreshToken) {
-      return res.status(403).json({ msg: "Неверный refresh token" });
+      return res.status(403).json({ msg: 'Неверный refresh token' });
     }
 
     const newAccessToken = generateAccessToken(payload.userId);
@@ -90,12 +92,12 @@ export default {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(401).json({ msg: "Refresh token не предоставлен" });
+      return res.status(401).json({ msg: 'Refresh token не предоставлен' });
     }
 
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
-      return res.status(403).json({ msg: "Неверный refresh token" });
+      return res.status(403).json({ msg: 'Неверный refresh token' });
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
@@ -107,23 +109,23 @@ export default {
   },
 
   protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
+    const authHeader = req.headers['authorization'];
+    const accessToken = authHeader && authHeader.split(' ')[1];
 
     if (!accessToken) {
-      return res.status(401).json({ msg: "Access token не предоставлен" });
+      return res.status(401).json({ msg: 'Access token не предоставлен' });
     }
 
     const payload = verifyAccessToken(accessToken);
-    if (!payload || typeof payload.userId !== "number") {
+    if (!payload || typeof payload.userId !== 'number') {
       return res.status(403).json({
-        msg: "Access token устарел. Пожалуйста, обновите токен или авторизуйтесь заново",
+        msg: 'Access token устарел. Пожалуйста, обновите токен или авторизуйтесь заново',
       });
     }
 
     const user = await User.getById(payload.userId);
     if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
+      return res.status(404).json({ msg: 'Пользователь не найден' });
     }
 
     res.json({ user });

@@ -1,5 +1,5 @@
+
 import Database from '@src/clients/database';
-import { User } from "@prisma/client";
 
 const db = Database.instance;
 

@@ -9,7 +9,7 @@
     "dev:down": "docker compose -f docker/docker-compose.yml down",
     "dev:db:migrate": "npx prisma migrate dev",
     "prepare": "husky install",
-    "lint": "eslint \"./**/*.ts\" --quiet"
+    "lint": "eslint \"./**/*.ts\" --quiet --fix"
   },
   "prisma": {
     "schema": "source/prisma/schema.prisma"

@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
+import { z } from 'zod';
 
 export function signup(req: Request, res: Response) {
   // https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
@@ -16,6 +16,6 @@ export function signup(req: Request, res: Response) {
   try {
     return schema.parse(req.body);
   } catch (error: unknown) {
-    res.status(404).json({ message: "Invalid user data" });
+    res.status(404).json({ message: 'Invalid user data' });
   }
 }

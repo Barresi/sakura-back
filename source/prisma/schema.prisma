@@ -29,11 +29,12 @@ model User {
 }
 
 model Friend {
-id         Int      @id @default(autoincrement())
-userId     Int
-friendId   Int
-status     String
-createdAt  DateTime @default(now())
-updatedAt  DateTime @updatedAt
-user       User     @relation("UserToFriends", fields: [userId], references: [id])
-friend     User     @relation("FriendToFriends", fields: [friendId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  friendId  Int
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation("UserToFriends", fields: [userId], references: [id])
+  friend    User     @relation("FriendToFriends", fields: [friendId], references: [id])
+}

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import pinoHttp from 'pino-http';
 import { ZodError } from 'zod';
 
@@ -21,14 +21,14 @@ export function preMiddlewares() {
 
 // - - - - - - //
 
-function errorHandler(err: Error, req: Request, res: Response) {
+function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   req.log.error(err);
 
   if (err instanceof ZodError) {
-    res.status(404).json({ message: "Некорректные данные" });
+    res.status(404).json({ message: 'Некорректные данные' });
   }
 
-  res.status(500).json({ message: "Internal server error" });
+  res.status(500).json({ message: 'Internal server error' });
 }
 
 export function postMiddlewares() {
