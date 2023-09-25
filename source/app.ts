@@ -1,12 +1,12 @@
-import "dotenv/config";
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import config from "config";
+import 'dotenv/config';
+import config from 'config';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
 
-import Logger from "./clients/logger";
-import { postMiddlewares, preMiddlewares } from "./middlewares";
-import api from "./api/router";
+import api from './api/router';
+import Logger from './clients/logger';
+import { postMiddlewares, preMiddlewares } from './middleware/middlewares';
 
 async function main() {
   // init app instance
