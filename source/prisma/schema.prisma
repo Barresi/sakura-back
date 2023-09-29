@@ -13,26 +13,52 @@ enum Role {
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   // main part
-  username  String?      @unique
-  firstName String
-  lastName  String
-  email     String       @unique
-  password  String
+  username     String?      @unique
+  firstName    String
+  lastName     String
+  email        String       @unique
+  password     String
   // - - -
-  role      Role         @default(USER)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  friends   Friendship[] @relation("Friends")
-  friended  Friendship[] @relation("Friended")
+  role         Role         @default(USER)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  chats        Chat[]       @relation("Participants")
+  adminChats   Chat[]       @relation("AdminChats")
+  sentMessages Message[]    @relation("Sender")
+  friends      Friendship[] @relation("Friends")
+  friended     Friendship[] @relation("Friended")
 }
 
 model Friendship {
-  id        Int      @id @default(autoincrement())
-  from      User     @relation("Friends", fields: [fromId], references: [id])
-  fromId    Int
-  to        User     @relation("Friended", fields: [toId], references: [id])
-  toId      Int
-  createdAt DateTime @default(now())
+  id           Int          @id @default(autoincrement())
+  from         User         @relation("Friends", fields: [fromId], references: [id])
+  fromId       Int
+  to           User         @relation("Friended", fields: [toId], references: [id])
+  toId         Int
+  createdAt    DateTime     @default(now())
+}
+
+model Chat {
+  id           Int          @id @default(autoincrement())
+  name         String
+  isGroupChat  Boolean      @default(false)
+  participants User[]       @relation("Participants")
+  admin        User?        @relation("AdminChats", fields: [adminId], references: [id])
+  adminId      Int
+  messages     Message[]    @relation("Messages")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Message {
+  id           Int          @id @default(autoincrement())
+  sender       User         @relation("Sender", fields: [senderId], references: [id])
+  senderId     Int
+  text         String
+  chat         Chat         @relation("Messages" ,fields: [chatId], references: [id])
+  chatId       Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
