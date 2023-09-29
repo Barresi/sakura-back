@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
+import { signup as validateSignup } from "./auth.validation";
 import User from "@src/data/user";
 import {
   generateAccessToken,
@@ -11,24 +12,21 @@ import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tok
 
 export default {
   signup: async function signup(req: Request, res: Response) {
-    const { email, password } = req.body;
 
-    // https://stackoverflow.com/questions/60282362/regex-pattern-for-email
-    /*
-    const emailRegex =
-      /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/;
-    if (!emailRegex.test(email)) throw new Error("Некорректный email");
-    */
-
-    const existingUser = await User.getViaEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ msg: "Пользователь с этим email уже существует" });
+    const body = validateSignup(req, res);
+    if (!body) {
+      res.status(404).json({ message: "Invalid user data" });
+      return;
     }
 
-    //if (!passwordRegex.test(password)) throw new Error("Пароль слишком слабый");
+    const existingUser = await User.getViaEmail(body.email);
+    if (existingUser) {
+      res.status(409).json({ message: "Этот email уже зарегестрирован" });
+      return;
+    }
 
-    const hashedPassword = await hash(password, await genSalt());
-    const user = await User.create(email, hashedPassword);
+    const hashedPassword = await hash(body.password, await genSalt());
+    const user = await User.create({ ...body, password: hashedPassword });
 
     res.json({ id: user.id });
   },
