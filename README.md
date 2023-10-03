@@ -6,4 +6,4 @@
 Чтобы создать сущность, выполните следующую команду:
 
 ```bash
-node .\create-entity.js entityName
+node create-entity.js [entityName]
