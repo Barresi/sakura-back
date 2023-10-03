@@ -18,6 +18,15 @@ export default {
   getViaEmail: function (email: string) {
     return db.user.findUnique({ where: { email } });
   },
+  getAllUsers: async function () {
+    try {
+      const users = await db.user.findMany();
+      return users;
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      throw new Error('Failed to fetch all users');
+    }
+  },
   async getById(userId: number) {
     try {
       const user = await db.user.findUnique({
