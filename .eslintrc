@@ -42,9 +42,9 @@
       }
     ],
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "indent": "off",
     "lines-between-class-members": ["error", "always"],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"]
+    "quotes": "off",
+    "semi": "off"
   }
 }
