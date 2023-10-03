@@ -9,7 +9,7 @@ export interface RequestWithUserId extends ExpressRequest {
 }
 
 export type CustomNextFunction = (
-  error?: any, // To address the ESLint error, you can replace 'any' with a more specific type if available.
+  error?: never, // To address the ESLint error, you can replace 'any' with a more specific type if available.
   req?: RequestWithUserId,
   res?: Response,
   next?: ExpressNextFunction

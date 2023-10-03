@@ -152,7 +152,7 @@
  *     summary: Get protected user data
  *     tags: [Auth]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User data retrieved successfully

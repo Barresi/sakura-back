@@ -43,7 +43,7 @@ export async function addFriend(
 export async function removeFriend(req: RequestWithUserId, res: Response): Promise<void> {
   const { userId, friendId } = req.body;
   try {
-    await Friends.acceptFriend(userId, friendId);
+    await Friends.removeFriend(userId, friendId);
     res.json({ message: 'Запрос на добавление в друзья успешно принят' });
   } catch (error) {
     console.error('Ошибка при принятии запроса в друзья:', error);
@@ -55,7 +55,7 @@ export async function removeFriend(req: RequestWithUserId, res: Response): Promi
 export async function acceptFriend(req: RequestWithUserId, res: Response): Promise<void> {
   const { userId, friendId } = req.body;
   try {
-    await Friends.removeFriend(userId, friendId);
+    await Friends.acceptFriend(userId, friendId);
     res.json({ status: true });
   } catch (error) {
     console.error('Ошибка при удалении друга:', error);

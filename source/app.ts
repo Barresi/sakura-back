@@ -37,7 +37,7 @@ async function main() {
   app.use(postMiddlewares());
 
   const port = config.get('deploy.port');
-  app.listen(port, () => {
+  server.listen(port, () => {
     Logger.instance.info(`\\|/ Sakura API is ready at http://localhost:${port} \\|/`);
   });
 }

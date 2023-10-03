@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import pinoHttp from 'pino-http';
 import { ZodError } from 'zod';
 
@@ -21,7 +21,7 @@ export function preMiddlewares() {
 
 // - - - - - - //
 
-function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+function errorHandler(err: Error, req: Request, res: Response) {
   req.log.error(err);
 
   if (err instanceof ZodError) {
