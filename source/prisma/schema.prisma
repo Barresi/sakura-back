@@ -13,19 +13,22 @@ enum Role {
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   // main part
-  username  String?      @unique
+  username  String? @unique
   firstName String
   lastName  String
-  email     String       @unique
+  email     String  @unique
   password  String
   // - - -
-  role      Role         @default(USER)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  friends   Friendship[] @relation("Friends")
-  friended  Friendship[] @relation("Friended")
+  role      Role    @default(USER)
+
+  friends  Friendship[] @relation("Friends")
+  friended Friendship[] @relation("Friended")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Message   Message[] @relation("Messages")
 }
 
 model Friendship {
@@ -35,4 +38,27 @@ model Friendship {
   to        User     @relation("Friended", fields: [toId], references: [id])
   toId      Int
   createdAt DateTime @default(now())
+}
+
+model Chat {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  Message Message[] @relation("Messages")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id       Int    @id @default(autoincrement())
+  text     String
+  senderId Int
+  chatId   Int
+
+  sender User @relation("Messages", fields: [senderId], references: [id])
+  chat   Chat @relation("Messages", fields: [chatId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
