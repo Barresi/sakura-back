@@ -1,6 +1,8 @@
 export default {
   deploy: {
     port: process.env.EXPRESS_PORT,
+    expressPort: process.env.EXPRESS_PORT,
+    socketsPort: process.env.SOCKETS_PORT,
     frontendUrl: process.env.FRONTEND_URL,
   },
   database: {
