@@ -2,6 +2,32 @@ import { Request, Response, NextFunction } from "express";
 import pinoHttp from "pino-http";
 import Logger from "./clients/logger";
 import { ZodError } from "zod";
+import { verifyAccessToken } from "./jwt";
+
+declare global {
+  namespace Express {
+    export interface Request {
+      session: {
+        userId: number;
+      };
+    }
+  }
+}
+
+function session(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers["authorization"];
+  const accessToken = authHeader && authHeader.split(" ")[1];
+
+  if (accessToken) {
+    const payload = verifyAccessToken(accessToken);
+
+    if (payload && typeof payload.userId === "number") {
+      req.session.userId = payload.userId;
+    }
+  }
+
+  next();
+}
 
 const logger = Logger.instance;
 const expressLogger = pinoHttp({
@@ -15,7 +41,7 @@ const expressLogger = pinoHttp({
 });
 
 export function preMiddlewares() {
-  return [expressLogger];
+  return [session, expressLogger];
 }
 
 // - - - - - - //
