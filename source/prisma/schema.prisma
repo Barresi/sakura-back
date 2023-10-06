@@ -12,6 +12,11 @@ enum Role {
   ADMIN
 }
 
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
 model User {
   id        Int     @id @default(autoincrement())
   // main part
@@ -32,12 +37,17 @@ model User {
 }
 
 model Friendship {
-  id        Int      @id @default(autoincrement())
-  from      User     @relation("Friends", fields: [fromId], references: [id])
-  fromId    Int
-  to        User     @relation("Friended", fields: [toId], references: [id])
-  toId      Int
+  id     Int  @id @default(autoincrement())
+  from   User @relation("Friends", fields: [fromId], references: [id])
+  fromId Int
+  to     User @relation("Friended", fields: [toId], references: [id])
+  toId   Int
+
+  status FriendshipStatus
+
   createdAt DateTime @default(now())
+
+  @@unique([fromId, toId])
 }
 
 model Chat {
