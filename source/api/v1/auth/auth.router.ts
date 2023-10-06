@@ -8,6 +8,6 @@ auth.post("/signup", wrap(ctrl.signup));
 auth.post("/login", wrap(ctrl.login));
 auth.post("/token", wrap(ctrl.token));
 auth.delete("/logout", wrap(ctrl.logout));
-auth.get("/protected", wrap(ctrl.protectedUser));
+auth.get("/me", wrap(ctrl.me));
 
 export default auth;

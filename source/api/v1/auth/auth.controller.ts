@@ -2,12 +2,7 @@ import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
 import { signup as validateSignup } from "./auth.validation";
 import User from "@src/data/user";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken,
-} from "./jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@src/jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 
 export default {
@@ -18,7 +13,7 @@ export default {
       return;
     }
 
-    const existingUser = await User.getViaEmail(body.email);
+    const existingUser = await User.getByEmail(body.email);
     if (existingUser) {
       res.status(409).json({ message: "Этот email уже зарегестрирован" });
       return;
@@ -33,7 +28,7 @@ export default {
   login: async function login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const user = await User.getViaEmail(email);
+    const user = await User.getByEmail(email);
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -105,26 +100,19 @@ export default {
     res.sendStatus(204);
   },
 
-  protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
+  me: async function (req: Request, res: Response) {
+    const { userId } = req.session;
 
-    if (!accessToken) {
-      return res.status(401).json({ message: "No access token provided" });
+    if (userId) {
+      const user = await User.getById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ user });
     }
 
-    const payload = verifyAccessToken(accessToken);
-    if (!payload || typeof payload.userId !== "number") {
-      return res.status(403).json({
-        error: "Access token expired. Please refresh your access token or log in again.",
-      });
-    }
-
-    const user = await User.getById(payload.userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({ user });
+    res.status(401).json({ message: "Unauthorized" });
   },
 };

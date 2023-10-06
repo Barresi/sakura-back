@@ -1,5 +1,4 @@
 import Database from "@src/clients/database";
-import { User } from "@prisma/client";
 
 const db = Database.instance;
 
@@ -15,7 +14,7 @@ export default {
   create: function (user: UserInput) {
     return db.user.create({ data: user });
   },
-  getViaEmail: function (email: string) {
+  getByEmail: function (email: string) {
     return db.user.findUnique({ where: { email } });
   },
   getById: function getById(userId: number) {
