@@ -2,17 +2,12 @@ import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
 import { signup as validateSignup } from "./auth.validation";
 import User from "@src/data/user";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken,
-} from "./jwt";
+import { generateAccessToken, generateRefreshToken } from "./jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
+import { CustomRequest } from "@src/middlewares";
 
 export default {
   signup: async function signup(req: Request, res: Response) {
-
     const body = validateSignup(req, res);
     if (!body) {
       res.status(404).json({ message: "Invalid user data" });
@@ -51,77 +46,48 @@ export default {
 
     const userWithoutPassword = { id: user.id, email: user.email };
 
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
-
     res.json({ accessToken, refreshToken, userWithoutPassword });
   },
 
-  token: async function token(req: Request, res: Response) {
+  token: async function token(req: CustomRequest, res: Response) {
     const { refreshToken } = req.body;
 
-    if (!refreshToken) {
-      return res.status(401).json({ msg: "Refresh token не предоставлен" });
+    if (!req.user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const payload = verifyRefreshToken(refreshToken);
-    if (!payload) {
-      return res.status(403).json({ msg: "Неверный refresh token" });
-    }
-
-    const storedRefreshToken = await getRefreshToken(payload.userId);
+    const storedRefreshToken = await getRefreshToken(req.user.userId);
     if (storedRefreshToken !== refreshToken) {
       return res.status(403).json({ msg: "Неверный refresh token" });
     }
 
-    const newAccessToken = generateAccessToken(payload.userId);
-    const newRefreshToken = generateRefreshToken(payload.userId);
+    const newAccessToken = generateAccessToken(req.user.userId);
+    const newRefreshToken = generateRefreshToken(req.user.userId);
 
-    await setRefreshToken(payload.userId, newRefreshToken);
-    await deleteRefreshToken(payload.userId, refreshToken);
-
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
+    await setRefreshToken(req.user.userId, newRefreshToken);
+    await deleteRefreshToken(req.user.userId, refreshToken);
 
     res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
-  logout: async function logout(req: Request, res: Response) {
+  logout: async function logout(req: CustomRequest, res: Response) {
     const { refreshToken } = req.body;
 
-    if (!refreshToken) {
-      return res.status(401).json({ msg: "Refresh token не предоставлен" });
+    if (!req.user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const payload = verifyRefreshToken(refreshToken);
-    if (!payload) {
-      return res.status(403).json({ msg: "Неверный refresh token" });
-    }
-
-    await deleteRefreshToken(payload.userId, refreshToken);
-
-    // res.clearCookie("accessToken");
-    // res.clearCookie("refreshToken");
+    await deleteRefreshToken(req.user.userId, refreshToken);
 
     res.sendStatus(204);
   },
 
-  protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
-
-    if (!accessToken) {
-      return res.status(401).json({ msg: "Access token не предоставлен" });
+  protectedUser: async function protectedUser(req: CustomRequest, res: Response) {
+    if (!req.user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const payload = verifyAccessToken(accessToken);
-    if (!payload || typeof payload.userId !== "number") {
-      return res.status(403).json({
-        msg: "Access token устарел. Пожалуйста, обновите токен или авторизуйтесь заново",
-      });
-    }
-
-    const user = await User.getById(payload.userId);
+    const user = await User.getById(req.user.userId);
     if (!user) {
       return res.status(404).json({ msg: "Пользователь не найден" });
     }
