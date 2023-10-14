@@ -22,6 +22,8 @@ async function main() {
     },
   });
 
+  setupChatEvent(io);
+
   app.use(cors({ credentials: true, origin: config.get("deploy.frontendUrl") }));
 
   app.use(express.json());
@@ -30,8 +32,6 @@ async function main() {
   app.use(preMiddlewares());
 
   app.use("/api", api);
-
-  setupChatEvent(io);
 
   app.use(postMiddlewares());
 
