@@ -1,9 +1,7 @@
 import { Server, Socket } from "socket.io";
 import Redis from "@src/clients/redis";
-// import { v4 as uuidv4 } from "uuid";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import Chat from "@src/data/chat";
+import Message from "@src/data/message";
 
 const redis = Redis.instance;
 
@@ -18,10 +16,6 @@ export const setupChatEvent = (io: Server) => {
       return;
     }
 
-    // const chatId = uuidv4();
-    // const chatId = "sss";
-    await redis.hset("chatRooms", String(chatId), JSON.stringify([userId, friendId]));
-
     await redis.hset(
       "userSockets",
       `userId: ${userId}`,
@@ -29,18 +23,47 @@ export const setupChatEvent = (io: Server) => {
       `connected: ${userId}`,
       "true"
     );
-
     console.log(`User with userId: ${userId} socketId: ${socket.id} connected`);
 
+    const chat = await Chat.createChatRoom(
+      String(chatId),
+      Number(userId),
+      Number(friendId)
+    );
     socket.join(chatId);
-    socket.emit("chatRoomCreated", chatId);
+    socket.emit("chatRoom", chatId);
+
+    await redis.hset("chatRooms", String(chatId), JSON.stringify([userId, friendId]));
     console.log(
       `User with userId: ${userId} socketId: ${socket.id} joined the chat ${chatId}`
     );
 
-    socket.on("disconnect", async () => {
-      socket.leave(String(chatId));
+    const messages = await Chat.getChatByChatId(String(chatId));
+    if (messages) {
+      socket.emit("chatMessages", messages);
+    }
 
+    socket.on("chatMessages", async (payload) => {
+      const { id, message, chatId } = payload;
+      console.log("Payload: ", payload);
+      try {
+        await Message.saveMessage({
+          senderId: id,
+          text: message,
+          chatId: chatId.toString(),
+        });
+
+        const updatedMessages = await Chat.getChatByChatId(chatId);
+        if (updatedMessages) {
+          io.to(chatId).emit("chatMessages", updatedMessages);
+        }
+      } catch (error) {
+        console.error("Error saving or fetching messages:", error);
+      }
+    });
+
+    socket.on("disconnect", async () => {
+      socket.leave(chatId.toString());
       await redis.hdel(
         "userSockets",
         `userId: ${userId}`,
@@ -48,40 +71,7 @@ export const setupChatEvent = (io: Server) => {
         `connected: ${userId}`,
         "false"
       );
-
       console.log(`User with userId: ${userId} socketId: ${socket.id} disconnected`);
-    });
-
-    socket.on("chat", async (payload) => {
-      const { id, message, chatId, socketId } = payload;
-
-      console.log("Payload: ", payload);
-
-      try {
-        let chat = await prisma.chat.findUnique({
-          where: { chatId },
-        });
-
-        if (!chat) {
-          chat = await prisma.chat.create({
-            data: {
-              chatId,
-            },
-          });
-        }
-
-        await prisma.message.create({
-          data: {
-            sender: { connect: { id } },
-            text: message,
-            chat: { connect: { chatId } },
-          },
-        });
-
-        io.to(chatId).emit("chat", payload);
-      } catch (error) {
-        console.error("Error saving message to the database:", error);
-      }
     });
   });
 };

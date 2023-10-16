@@ -18,20 +18,18 @@ export default {
   getViaEmail: function (email: string) {
     return db.user.findUnique({ where: { email } });
   },
-  getById: function getById(userId: number) {
-    try {
-      return db.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          id: true,
-          email: true,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching user by ID:", error);
-      throw new Error("Failed to fetch user by ID");
-    }
+  getById: function (userId: number) {
+    return db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      },
+    });
   },
 };
