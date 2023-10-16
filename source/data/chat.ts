@@ -1,6 +1,5 @@
 import Database from "@src/clients/database";
 import { Chat, Message, Prisma, User } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
 
 const db = Database.instance;
 
@@ -16,10 +15,9 @@ export default {
     });
 
     if (!existingChat) {
-      const newChatId = uuidv4();
       const newChat = await db.chat.create({
         data: {
-          chatId: newChatId,
+          chatId,
           participants: {
             connect: [{ id: userId }, { id: friendId }],
           },
@@ -27,6 +25,7 @@ export default {
       });
       return newChat;
     }
+    return existingChat;
   },
   getChatByChatId: async function (
     chatId: string
