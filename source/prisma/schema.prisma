@@ -12,7 +12,7 @@ enum Role {
   ADMIN
 }
 
-enum FriendshipStatus {
+enum RequestStatus {
   PENDING
   ACCEPTED
 }
@@ -28,47 +28,23 @@ model User {
   // - - -
   role      Role    @default(USER)
 
-  friends  Friendship[] @relation("Friends")
-  friended Friendship[] @relation("Friended")
+  friends   Friend[] @relation("Friends")
+  friended  Friend[] @relation("Friended")
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Message   Message[] @relation("Messages")
 }
 
-model Friendship {
-  id     Int  @id @default(autoincrement())
-  from   User @relation("Friends", fields: [fromId], references: [id])
-  fromId Int
-  to     User @relation("Friended", fields: [toId], references: [id])
-  toId   Int
+model Friend {
+  id        Int  @id @default(autoincrement())
+  from      User @relation("Friends", fields: [fromId], references: [id])
+  fromId    Int
+  to        User @relation("Friended", fields: [toId], references: [id])
+  toId      Int
 
-  status FriendshipStatus
+  status    RequestStatus
 
   createdAt DateTime @default(now())
 
   @@unique([fromId, toId])
-}
-
-model Chat {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  Message Message[] @relation("Messages")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Message {
-  id       Int    @id @default(autoincrement())
-  text     String
-  senderId Int
-  chatId   Int
-
-  sender User @relation("Messages", fields: [senderId], references: [id])
-  chat   Chat @relation("Messages", fields: [chatId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

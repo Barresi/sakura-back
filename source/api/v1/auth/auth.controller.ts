@@ -7,21 +7,20 @@ import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tok
 
 export default {
   signup: async function signup(req: Request, res: Response) {
-
     const body = validateSignup(req, res);
     if (!body) {
       res.status(404).json({ message: "Invalid user data" });
       return;
     }
 
-    const existingUser = await User.getByEmail(body.email);
+    const existingUser = await User.getUserByEmail(body.email);
     if (existingUser) {
       res.status(409).json({ message: "Этот email уже зарегестрирован" });
       return;
     }
 
     const hashedPassword = await hash(body.password, await genSalt());
-    const user = await User.create({ ...body, password: hashedPassword });
+    const user = await User.createUser({ ...body, password: hashedPassword });
 
     res.json({ id: user.id });
   },
@@ -29,7 +28,7 @@ export default {
   login: async function login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const user = await User.getByEmail(email);
+    const user = await User.getUserByEmail(email);
     if (!user) {
       return res.status(401).json({ msg: "Неверный email или пароль" });
     }
@@ -45,9 +44,6 @@ export default {
     await setRefreshToken(user.id, refreshToken);
 
     const userWithoutPassword = { id: user.id, email: user.email };
-
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
 
     res.json({ accessToken, refreshToken, userWithoutPassword });
   },
@@ -75,9 +71,6 @@ export default {
     await setRefreshToken(payload.userId, newRefreshToken);
     await deleteRefreshToken(payload.userId, refreshToken);
 
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
-
     res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
@@ -95,25 +88,20 @@ export default {
 
     await deleteRefreshToken(payload.userId, refreshToken);
 
-    // res.clearCookie("accessToken");
-    // res.clearCookie("refreshToken");
-
     res.sendStatus(204);
   },
 
   me: async function (req: Request, res: Response) {
-    const { userId } = req.session;
-
-    if (userId) {
-      const user = await User.getById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ user });
+    const userId = req.userId;
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(200).json({ user });
+  },
+  all: async (req: Request, res: Response) => {
+    const users = await User.getAllUsers();
+    res.status(200).json(users);
   },
 };

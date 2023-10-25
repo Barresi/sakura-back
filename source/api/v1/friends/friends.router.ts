@@ -5,6 +5,7 @@ import guard from "../access-guard";
 
 const friends = Router();
 
-friends.post("/request", guard, wrap(ctrl.request));
+friends.get("/", guard, wrap(ctrl.getAllFriends));
+friends.delete("/:friendId", guard, wrap(ctrl.deleteFriend));
 
 export default friends;

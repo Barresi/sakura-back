@@ -1,29 +1,49 @@
 import { Request, Response } from "express";
 import User from "@src/data/user";
-import Friendship from "@src/data/friendship";
-
-import { request as validateRequest } from "./friends.validation";
+import Friend from "@src/data/friend";
 
 export default {
-  request: async function (req: Request, res: Response) {
-    const { targetId } = validateRequest(req, res)!;
-    const { userId } = req.session;
+  getAllFriends: async (req: Request, res: Response) => {
+    const userId = req.userId;
 
-    if (userId === targetId) {
-      return res.status(400).json({ message: "Invalid request data" });
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
     }
 
-    const targetUser = await User.getById(targetId);
-    if (!targetUser) {
-      res.status(404).json({ message: "Неизвестный пользователь" });
-      return;
+    const friends = await Friend.getAllFriends(userId);
+
+    return res.status(200).json(friends);
+  },
+  deleteFriend: async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const friendId = parseInt(req.params.friendId, 10);
+
+    if (isNaN(friendId) || friendId <= 0) {
+      return res.status(400).json({ msg: "Invalid friend ID" });
     }
 
-    const existingFriendship = await Friendship.getPair(userId, targetId);
-    if (existingFriendship) {
-      return res.status(400).json({ message: "Invalid request data" });
+    if (userId === friendId) {
+      return res.status(400).json({ msg: "Cannot remove yourself as a friend." });
     }
 
-    return Friendship.create(userId, targetId);
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const friendExists = await User.getUserById(friendId);
+    if (!friendExists) {
+      return res.status(404).json({ msg: "Friend not found" });
+    }
+
+    const areFriends = await Friend.areFriends(userId, friendId);
+
+    if (!areFriends) {
+      return res.status(404).json({ msg: "Users are not friends" });
+    }
+
+    await Friend.deleteFriend(userId, friendId);
+    res.status(204).json({ msg: "Friend removed successfully." });
   },
 };
