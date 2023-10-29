@@ -8,7 +8,7 @@ export default {
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const friends = await Friend.getAllFriends(userId);
@@ -20,30 +20,31 @@ export default {
     const friendId = parseInt(req.params.friendId, 10);
 
     if (isNaN(friendId) || friendId <= 0) {
-      return res.status(400).json({ msg: "Invalid friend ID" });
+      return res.status(400).json({ msg: "Неверный формат friend ID" });
     }
 
     if (userId === friendId) {
-      return res.status(400).json({ msg: "Cannot remove yourself as a friend." });
+      return res.status(400).json({ msg: "Невозможно удалить себя из друзей" });
     }
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const friendExists = await User.getUserById(friendId);
     if (!friendExists) {
-      return res.status(404).json({ msg: "Friend not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const areFriends = await Friend.areFriends(userId, friendId);
 
     if (!areFriends) {
-      return res.status(404).json({ msg: "Users are not friends" });
+      return res.status(403).json({ msg: "Пользователи не являются друзьями" });
     }
 
     await Friend.deleteFriend(userId, friendId);
-    res.status(204).json({ msg: "Friend removed successfully." });
+    res.json({ msg: "Друг успешно удален" });
+    res.status(204);
   },
 };

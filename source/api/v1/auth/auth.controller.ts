@@ -9,20 +9,20 @@ export default {
   signup: async function signup(req: Request, res: Response) {
     const body = validateSignup(req, res);
     if (!body) {
-      res.status(404).json({ message: "Invalid user data" });
+      res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
       return;
     }
 
     const existingUser = await User.getUserByEmail(body.email);
     if (existingUser) {
-      res.status(409).json({ message: "Этот email уже зарегестрирован" });
+      res.status(409).json({ msg: "Этот email уже зарегистрирован" });
       return;
     }
 
     const hashedPassword = await hash(body.password, await genSalt());
     const user = await User.createUser({ ...body, password: hashedPassword });
 
-    res.json({ id: user.id });
+    res.status(201).json({ id: user.id });
   },
 
   login: async function login(req: Request, res: Response) {
@@ -45,7 +45,7 @@ export default {
 
     const userWithoutPassword = { id: user.id, email: user.email };
 
-    res.json({ accessToken, refreshToken, userWithoutPassword });
+    res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
   },
 
   token: async function token(req: Request, res: Response) {
@@ -71,7 +71,7 @@ export default {
     await setRefreshToken(payload.userId, newRefreshToken);
     await deleteRefreshToken(payload.userId, refreshToken);
 
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    res.status(200).json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
   logout: async function logout(req: Request, res: Response) {
@@ -87,11 +87,11 @@ export default {
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
-
+    res.json({ msg: "Пользователь успешно разлогировался" });
     res.sendStatus(204);
   },
 
-  me: async function (req: Request, res: Response) {
+  userInfo: async function (req: Request, res: Response) {
     const userId = req.userId;
     const user = await User.getUserById(userId);
     if (!user) {
@@ -99,9 +99,5 @@ export default {
     }
 
     res.status(200).json({ user });
-  },
-  all: async (req: Request, res: Response) => {
-    const users = await User.getAllUsers();
-    res.status(200).json(users);
   },
 };

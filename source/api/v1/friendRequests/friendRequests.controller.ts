@@ -9,7 +9,7 @@ export default {
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const requests = await FriendRequest.getAllReceivedRequests(userId);
@@ -21,7 +21,7 @@ export default {
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const requests = await FriendRequest.getAllSentRequests(userId);
@@ -33,93 +33,93 @@ export default {
     const requestId = parseInt(req.params.requestId, 10);
 
     if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Invalid request ID" });
+      return res.status(400).json({ msg: "Неверный формат request ID" });
     }
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const request = await FriendRequest.findRequestById(requestId, userId);
     if (!request) {
-      return res.status(404).json({ msg: "Friend request not found." });
+      return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
 
     if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Friend request is not in PENDING state." });
+      return res.status(400).json({ msg: "Статус заявки не PENDING" });
     }
 
     if (request.fromId === userId) {
-      return res.status(400).json({ msg: "You can't accept your own requests." });
+      return res.status(400).json({ msg: "Невозможно принять свою заявку" });
     }
 
     await FriendRequest.acceptRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Friend request accepted successfully." });
+    return res.status(200).json({ msg: "Заявка в друзья успешно принята" });
   },
   rejectRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
     const requestId = parseInt(req.params.requestId, 10);
 
     if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Invalid request ID" });
+      return res.status(400).json({ msg: "Неверный формат request ID" });
     }
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const request = await FriendRequest.findRequestById(requestId, userId);
     if (!request) {
-      return res.status(404).json({ msg: "Friend request not found." });
+      return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
 
     if (request.toId !== userId) {
       return res
         .status(403)
-        .json({ msg: "Unauthorized: You can only reject your own requests." });
+        .json({ msg: "Вы можете отклонить только входящие вам заявки" });
     }
 
     if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Friend request is not in PENDING state." });
+      return res.status(400).json({ msg: "Статус заявки не PENDING" });
     }
 
     await FriendRequest.rejectRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Friend request rejected successfully." });
+    return res.status(200).json({ msg: "Заявка в друзья успешно отклонена" });
   },
   cancelRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
     const requestId = parseInt(req.params.requestId, 10);
 
     if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Invalid request ID" });
+      return res.status(400).json({ msg: "Неверный формат request ID" });
     }
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const request = await FriendRequest.findRequestById(requestId, userId);
     if (!request) {
-      return res.status(404).json({ msg: "Friend request not found." });
+      return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
 
     if (request.fromId !== userId) {
       return res
         .status(403)
-        .json({ msg: "Unauthorized: You can only cancel your own requests." });
+        .json({ msg: "Вы можете отменить только исходящие от вас заявки" });
     }
 
     if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Friend request is not in PENDING state." });
+      return res.status(400).json({ msg: "Статус заявки не PENDING" });
     }
 
     await FriendRequest.cancelRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Friend request canceled successfully." });
+    return res.status(200).json({ msg: "Заявка в друзья успешно отменена" });
   },
 };

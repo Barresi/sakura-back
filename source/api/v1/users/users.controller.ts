@@ -13,34 +13,34 @@ export default {
     const friendId = parseInt(req.params.friendId, 10);
 
     if (isNaN(friendId) || friendId <= 0) {
-      return res.status(400).json({ msg: "Invalid friend ID" });
+      return res.status(400).json({ msg: "Неверный формат friend ID" });
     }
 
     if (userId === friendId) {
-      return res.status(400).json({ msg: "Cannot send a friend request to yourself." });
+      return res.status(400).json({ msg: "Невозможно отправить заявку самому себе" });
     }
 
     const user = await User.getUserById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const friend = await User.getUserById(friendId);
     if (!friend) {
-      return res.status(404).json({ msg: "Friend not found." });
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const areFriends = await Friend.areFriends(userId, friendId);
     if (areFriends) {
-      return res.status(400).json({ msg: "You are already friends with this user." });
+      return res.status(400).json({ msg: "Вы уже друзья с этим пользователем" });
     }
 
     const existingRequest = await FriendRequest.findPendingRequest(userId, friendId);
     if (existingRequest) {
-      return res.status(400).json({ msg: "A pending friend request already exists." });
+      return res.status(400).json({ msg: "Заявка уже была отправлена" });
     }
 
     await FriendRequest.sendFriendRequest(userId, friendId);
-    res.status(201).json({ message: "Friend request sent successfully." });
+    res.status(201).json({ msg: "Заявка в друзья успешно отправлена" });
   },
 };

@@ -9,6 +9,6 @@ auth.post("/signup", wrap(ctrl.signup));
 auth.post("/login", wrap(ctrl.login));
 auth.post("/token", wrap(ctrl.token));
 auth.post("/logout", wrap(ctrl.logout));
-auth.get("/me", guard, wrap(ctrl.me));
+auth.get("/userInfo", guard, wrap(ctrl.userInfo));
 
 export default auth;

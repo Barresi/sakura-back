@@ -10,6 +10,7 @@ import Logger from "./clients/logger";
 import { postMiddlewares, preMiddlewares } from "./middlewares";
 import api from "./api/router";
 import { setupChatEvent } from "./sockets/messages.socket";
+import swaggerDocs from "./clients/swagger";
 
 async function main() {
   const app = express();
@@ -35,8 +36,10 @@ async function main() {
 
   app.use(postMiddlewares());
 
-  server.listen(config.get("deploy.expressPort"));
+  server.listen(config.get("deploy.port"));
   Logger.instance.info("\\|/ Sakura API is ready \\|/");
+
+  swaggerDocs(app, config.get("deploy.port"));
 }
 
 main();

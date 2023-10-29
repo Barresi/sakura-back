@@ -13,7 +13,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
   const payload = verifyAccessToken(accessToken);
   if (!payload || typeof payload.userId !== "number") {
     return res.status(403).json({
-      msg: "Access token устарел. Пожалуйста, обновите токен или авторизуйтесь заново",
+      msg: "Access token устарел",
     });
   }
 
