@@ -653,7 +653,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Статус заявки не PENDING, Невозможно принять свою заявку
+ *               msg: Неверный формат request ID, Заявка уже была принята, Невозможно принять свою заявку
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -708,7 +708,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Статус заявки не PENDING
+ *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -763,7 +763,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Статус заявки не PENDING
+ *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:

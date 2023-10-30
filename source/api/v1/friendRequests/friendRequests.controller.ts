@@ -46,8 +46,8 @@ export default {
       return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
 
-    if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Статус заявки не PENDING" });
+    if (request.status === RequestStatus.ACCEPTED) {
+      return res.status(400).json({ msg: "Заявка уже была принята" });
     }
 
     if (request.fromId === userId) {
@@ -82,10 +82,6 @@ export default {
         .json({ msg: "Вы можете отклонить только входящие вам заявки" });
     }
 
-    if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Статус заявки не PENDING" });
-    }
-
     await FriendRequest.rejectRequest(userId, requestId);
 
     return res.status(200).json({ msg: "Заявка в друзья успешно отклонена" });
@@ -112,10 +108,6 @@ export default {
       return res
         .status(403)
         .json({ msg: "Вы можете отменить только исходящие от вас заявки" });
-    }
-
-    if (request.status !== RequestStatus.PENDING) {
-      return res.status(400).json({ msg: "Статус заявки не PENDING" });
     }
 
     await FriendRequest.cancelRequest(userId, requestId);
