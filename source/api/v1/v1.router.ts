@@ -86,6 +86,10 @@ const v1 = Router();
  *                   properties:
  *                     id:
  *                       type: integer
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
  *                     email:
  *                       type: string
  *                 required:
@@ -185,7 +189,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь успешно разлогировался
+ *               msg: Вы успешно вышли из своего аккаунта
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -278,48 +282,7 @@ v1.use("/auth", auth);
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   username:
- *                     type: string
- *                   firstName:
- *                     type: string
- *                   lastName:
- *                     type: string
- *                   email:
- *                     type: string
- *                   friends:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: integer
- *                         fromId:
- *                           type: integer
- *                         toId:
- *                           type: integer
- *                         status:
- *                           type: string
- *                         createdAt:
- *                           type: string
- *                   friended:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: integer
- *                         fromId:
- *                           type: integer
- *                         toId:
- *                           type: integer
- *                         status:
- *                           type: string
- *                         createdAt:
- *                           type: string
+ *                 $ref: '#/components/schemas/User'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -368,13 +331,13 @@ v1.use("/auth", auth);
  *         content:
  *           application/json:
  *             example:
- *               msg: Заявка в друзья успешно отправлена
+ *               msg: Вы отправили заявку в друзья {friend.firstName} {friend.lastName}
  *       '400':
  *         description: Bad request
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, Невозможно отправить заявку самому себе, Вы уже друзья с этим пользователем, или Заявка уже была отправлена
+ *               msg: Неверный формат friend ID, Вы не можете отправить заявку в друзья самому себе, Вы уже друзья с этим пользователем, Вы уже отправили заявку в друзья этому пользователю
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -420,18 +383,7 @@ v1.use("/users", users);
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                   fromId:
- *                     type: integer
- *                   toId:
- *                     type: integer
- *                   status:
- *                     type: string
- *                   createdAt:
- *                     type: string
+ *                 $ref: '#/components/schemas/Friend'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -480,13 +432,13 @@ v1.use("/users", users);
  *         content:
  *           application/json:
  *             example:
- *               msg: Друг успешно удален
+ *               msg: Вы удалили {user.firstName} {user.lastName} из друзей
  *       '400':
  *         description: Bad request
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, или Невозможно удалить себя из друзей
+ *               msg: Неверный формат friend ID, Вы не можете удалить себя из друзей
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -498,7 +450,7 @@ v1.use("/users", users);
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token устарел, или Пользователи не являются друзьями
+ *               msg: Access token устарел, Вы не являетесь друзьями с этим пользователем
  *       '404':
  *         description: Not found
  *         content:
@@ -647,13 +599,13 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Заявка в друзья успешно принята
+ *               msg: Вы приняли заявку в друзья от {user.firstName} {user.lastName}
  *       '400':
  *         description: Bad request
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Заявка уже была принята, Невозможно принять свою заявку
+ *               msg: Неверный формат request ID, Вы уже приняли эту заявку, Вы не можете принять свою заявку
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -702,7 +654,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Заявка в друзья успешно отклонена
+ *               msg: Вы отклонили заявку в друзья от {user.firstName} {user.lastName}
  *       '400':
  *         description: Bad request
  *         content:
@@ -757,7 +709,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Заявка в друзья успешно отменена
+ *               msg: Вы отменили заявку в друзья от {user.firstName} {user.lastName}
  *       '400':
  *         description: Bad request
  *         content:

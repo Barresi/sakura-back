@@ -47,16 +47,18 @@ export default {
     }
 
     if (request.status === RequestStatus.ACCEPTED) {
-      return res.status(400).json({ msg: "Заявка уже была принята" });
+      return res.status(400).json({ msg: "Вы уже приняли эту заявку" });
     }
 
     if (request.fromId === userId) {
-      return res.status(400).json({ msg: "Невозможно принять свою заявку" });
+      return res.status(400).json({ msg: "Вы не можете принять свою заявку" });
     }
 
     await FriendRequest.acceptRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Заявка в друзья успешно принята" });
+    return res
+      .status(200)
+      .json({ msg: `Вы приняли заявку в друзья от ${user.firstName} ${user.lastName}` });
   },
   rejectRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -84,7 +86,9 @@ export default {
 
     await FriendRequest.rejectRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Заявка в друзья успешно отклонена" });
+    return res.status(200).json({
+      msg: `Вы отклонили заявку в друзья от ${user.firstName} ${user.lastName}`,
+    });
   },
   cancelRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -112,6 +116,8 @@ export default {
 
     await FriendRequest.cancelRequest(userId, requestId);
 
-    return res.status(200).json({ msg: "Заявка в друзья успешно отменена" });
+    return res
+      .status(200)
+      .json({ msg: `Вы отменили заявку в друзья от ${user.firstName} ${user.lastName}` });
   },
 };

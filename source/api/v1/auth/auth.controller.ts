@@ -43,7 +43,12 @@ export default {
 
     await setRefreshToken(user.id, refreshToken);
 
-    const userWithoutPassword = { id: user.id, email: user.email };
+    const userWithoutPassword = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
   },
@@ -87,7 +92,7 @@ export default {
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
-    res.json({ msg: "Пользователь успешно разлогировался" });
+    res.json({ msg: "Вы успешно вышли из своего аккаунта" });
     res.sendStatus(204);
   },
 

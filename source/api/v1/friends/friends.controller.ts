@@ -24,7 +24,7 @@ export default {
     }
 
     if (userId === friendId) {
-      return res.status(400).json({ msg: "Невозможно удалить себя из друзей" });
+      return res.status(400).json({ msg: "Вы не можете удалить себя из друзей" });
     }
 
     const user = await User.getUserById(userId);
@@ -40,11 +40,13 @@ export default {
     const areFriends = await Friend.areFriends(userId, friendId);
 
     if (!areFriends) {
-      return res.status(403).json({ msg: "Пользователи не являются друзьями" });
+      return res
+        .status(403)
+        .json({ msg: "Вы не являетесь друзьями с этим пользователем" });
     }
 
     await Friend.deleteFriend(userId, friendId);
-    res.json({ msg: "Друг успешно удален" });
+    res.json({ msg: `Вы удалили ${user.firstName} ${user.lastName} из друзей` });
     res.status(204);
   },
 };

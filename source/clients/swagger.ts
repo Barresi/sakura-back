@@ -42,6 +42,94 @@ const options: swaggerJsdoc.Options = {
           },
           required: ["firstName", "lastName", "email", "password"],
         },
+        User: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+            },
+            username: {
+              type: "string",
+            },
+            firstName: {
+              type: "string",
+            },
+            lastName: {
+              type: "string",
+            },
+            email: {
+              type: "string",
+            },
+            friends: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "integer",
+                  },
+                  fromId: {
+                    type: "integer",
+                  },
+                  toId: {
+                    type: "integer",
+                  },
+                  status: {
+                    type: "string",
+                  },
+                  createdAt: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            friended: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "integer",
+                  },
+                  fromId: {
+                    type: "integer",
+                  },
+                  toId: {
+                    type: "integer",
+                  },
+                  status: {
+                    type: "string",
+                  },
+                  createdAt: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            required: ["id", "firstName", "lastName", "email", "friends", "friended"],
+          },
+        },
+        Friend: {
+          type: "object",
+          properties: {
+            id: {
+              type: "integer",
+            },
+            fromId: {
+              type: "integer",
+            },
+            toId: {
+              type: "integer",
+            },
+            status: {
+              type: "string",
+            },
+            createdAt: {
+              type: "string",
+            },
+          },
+          required: ["id", "fromId", "toId", "status", "createdAt"],
+        },
       },
     },
     security: [

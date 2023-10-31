@@ -17,7 +17,9 @@ export default {
     }
 
     if (userId === friendId) {
-      return res.status(400).json({ msg: "Невозможно отправить заявку самому себе" });
+      return res
+        .status(400)
+        .json({ msg: "Вы не можете отправить заявку в друзья самому себе" });
     }
 
     const user = await User.getUserById(userId);
@@ -37,10 +39,14 @@ export default {
 
     const existingRequest = await FriendRequest.findPendingRequest(userId, friendId);
     if (existingRequest) {
-      return res.status(400).json({ msg: "Заявка уже была отправлена" });
+      return res
+        .status(400)
+        .json({ msg: "Вы уже отправили заявку в друзья этому пользователю" });
     }
 
     await FriendRequest.sendFriendRequest(userId, friendId);
-    res.status(201).json({ msg: "Заявка в друзья успешно отправлена" });
+    res.status(201).json({
+      msg: `Вы отправили заявку в друзья ${friend.firstName} ${friend.lastName}`,
+    });
   },
 };
