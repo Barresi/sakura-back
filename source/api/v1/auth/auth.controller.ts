@@ -92,7 +92,7 @@ export default {
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
-    res.sendStatus(200).json({ msg: "Вы успешно вышли из своего аккаунта" });
+    res.status(200).json({ msg: "Вы успешно вышли из своего аккаунта" });
   },
 
   userInfo: async function (req: Request, res: Response) {
