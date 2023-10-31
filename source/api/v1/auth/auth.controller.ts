@@ -22,7 +22,7 @@ export default {
     const hashedPassword = await hash(body.password, await genSalt());
     const user = await User.createUser({ ...body, password: hashedPassword });
 
-    res.status(201).json({ id: user.id });
+    res.status(200).json({ id: user.id });
   },
 
   login: async function login(req: Request, res: Response) {
@@ -92,8 +92,7 @@ export default {
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
-    res.json({ msg: "Вы успешно вышли из своего аккаунта" });
-    res.sendStatus(204);
+    res.sendStatus(200).json({ msg: "Вы успешно вышли из своего аккаунта" });
   },
 
   userInfo: async function (req: Request, res: Response) {

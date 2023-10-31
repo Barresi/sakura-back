@@ -21,7 +21,7 @@ const v1 = Router();
  *           schema:
  *             $ref: '#/components/schemas/UserRegistration'
  *     responses:
- *       '201':
+ *       '200':
  *         description: Created
  *         content:
  *           application/json:
@@ -184,7 +184,7 @@ const v1 = Router();
  *             required:
  *               - refreshToken
  *     responses:
- *       '204':
+ *       '200':
  *         description: No content
  *         content:
  *           application/json:
@@ -326,7 +326,7 @@ v1.use("/auth", auth);
  *         schema:
  *           type: integer
  *     responses:
- *       '201':
+ *       '200':
  *         description: Created
  *         content:
  *           application/json:
@@ -427,7 +427,7 @@ v1.use("/users", users);
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       '204':
+ *       '200':
  *         description: No content
  *         content:
  *           application/json:

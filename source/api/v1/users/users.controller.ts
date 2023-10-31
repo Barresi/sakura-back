@@ -45,7 +45,7 @@ export default {
     }
 
     await FriendRequest.sendFriendRequest(userId, friendId);
-    res.status(201).json({
+    res.status(200).json({
       msg: `Вы отправили заявку в друзья ${friend.firstName} ${friend.lastName}`,
     });
   },

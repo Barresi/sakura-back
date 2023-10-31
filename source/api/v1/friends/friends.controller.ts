@@ -46,7 +46,8 @@ export default {
     }
 
     await Friend.deleteFriend(userId, friendId);
-    res.json({ msg: `Вы удалили ${user.firstName} ${user.lastName} из друзей` });
-    res.status(204);
+    res
+      .status(200)
+      .json({ msg: `Вы удалили ${user.firstName} ${user.lastName} из друзей` });
   },
 };
