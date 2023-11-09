@@ -16,6 +16,6 @@ export function signup(req: Request, res: Response) {
   try {
     return schema.parse(req.body);
   } catch (error: unknown) {
-    res.status(404).json({ message: "Invalid user data" });
+    res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
   }
 }

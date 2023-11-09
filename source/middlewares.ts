@@ -3,6 +3,14 @@ import pinoHttp from "pino-http";
 import Logger from "./clients/logger";
 import { ZodError } from "zod";
 
+declare global {
+  namespace Express {
+    export interface Request {
+      userId: number;
+    }
+  }
+}
+
 const logger = Logger.instance;
 const expressLogger = pinoHttp({
   logger,
@@ -24,10 +32,10 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
   req.log.error(err);
 
   if (err instanceof ZodError) {
-    res.status(404).json({ message: "Некорректные данные" });
+    res.status(404).json({ msg: "Некорректные данные" });
   }
 
-  res.status(500).json({ message: "Internal server error" });
+  res.status(500).json({ msg: "Внутренняя ошибка сервера" });
 }
 
 export function postMiddlewares() {

@@ -1,5 +1,6 @@
+import { RequestStatus } from "@prisma/client";
 import Database from "@src/clients/database";
-import { User } from "@prisma/client";
+import friendData from "@src/data/friend";
 
 const db = Database.instance;
 
@@ -12,26 +13,36 @@ type UserInput = {
 };
 
 export default {
-  create: function (user: UserInput) {
+  createUser: async (user: UserInput) => {
     return db.user.create({ data: user });
   },
-  getViaEmail: function (email: string) {
+  getUserByEmail: async (email: string) => {
     return db.user.findUnique({ where: { email } });
   },
-  getById: function getById(userId: number) {
-    try {
-      return db.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          id: true,
-          email: true,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching user by ID:", error);
-      throw new Error("Failed to fetch user by ID");
-    }
+  getUserById: async (userId: number) => {
+    return db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      },
+    });
+  },
+  getAllUsers: async () => {
+    return db.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        friends: true,
+        friended: true,
+      },
+    });
   },
 };
