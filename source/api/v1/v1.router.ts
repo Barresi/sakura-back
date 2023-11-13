@@ -86,7 +86,7 @@ const v1 = Router();
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
+ *                       type: string
  *                     firstName:
  *                       type: string
  *                     lastName:
@@ -232,7 +232,7 @@ const v1 = Router();
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
+ *                       type: string
  *                     email:
  *                       type: string
  *                   required:
@@ -325,7 +325,7 @@ v1.use("/auth", auth);
  *         required: true
  *         description: The ID of the user to send a friend request to.
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       '200':
  *         description: OK
@@ -338,7 +338,7 @@ v1.use("/auth", auth);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, Вы не можете отправить заявку в друзья самому себе, Вы уже друзья с этим пользователем, Вы уже отправили заявку в друзья этому пользователю
+ *               msg: Вы не можете отправить заявку в друзья самому себе, Вы уже друзья с этим пользователем, Вы уже отправили заявку в друзья этому пользователю
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -422,7 +422,7 @@ v1.use("/users", users);
  *       - in: path
  *         name: friendId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend to delete
  *     security:
@@ -439,7 +439,7 @@ v1.use("/users", users);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, Вы не можете удалить себя из друзей
+ *               msg: Вы не можете удалить себя из друзей
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -488,11 +488,11 @@ v1.use("/friends", friends);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   fromId:
- *                     type: integer
+ *                     type: string
  *                   toId:
- *                     type: integer
+ *                     type: string
  *                   status:
  *                     type: string
  *                   createdAt:
@@ -543,11 +543,11 @@ v1.use("/friends", friends);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   fromId:
- *                     type: integer
+ *                     type: string
  *                   toId:
- *                     type: integer
+ *                     type: string
  *                   status:
  *                     type: string
  *                   createdAt:
@@ -589,7 +589,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to accept
  *     security:
@@ -606,7 +606,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Вы уже приняли эту заявку, Вы не можете принять свою заявку
+ *               msg: Вы уже приняли эту заявку, Вы не можете принять свою заявку
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -644,7 +644,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to reject
  *     security:
@@ -656,12 +656,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Вы отклонили заявку в друзья от {user.firstName} {user.lastName}
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             example:
- *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -699,7 +693,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to cancel
  *     security:
@@ -711,12 +705,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Вы отменили заявку в друзья от {user.firstName} {user.lastName}
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             example:
- *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -760,9 +748,9 @@ v1.use("/friend-requests", firendRequests);
  *             type: object
  *             properties:
  *               userId:
- *                 type: integer
+ *                 type: string
  *               friendId:
- *                 type: integer
+ *                 type: string
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -828,7 +816,7 @@ v1.use("/friend-requests", firendRequests);
  *                     type: object
  *                     properties:
  *                       id:
- *                         type: number
+ *                         type: string
  *                       message:
  *                         type: string
  *                       chatId:

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import User from "@src/data/user";
-import Friend from "@src/data/friend";
-import FriendRequest from "@src/data/friend-request";
 import Chat from "@src/data/chat";
 
 export default {
@@ -18,13 +16,8 @@ export default {
       return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const chatExists = await Chat.findExistingChat(userId, friendId);
-    if (chatExists) {
-      return res.status(409).json({ msg: "Чат уже существует" });
-    }
-
-    const chat = await Chat.createChatRoom(userId, friendId);
-    res.status(200).json({ chatId: chat.chatId });
+    const chatId = await Chat.createChatRoom(userId, friendId);
+    res.status(200).json({ chatId });
   },
   userChats: async (req: Request, res: Response) => {
     const userId = req.userId;

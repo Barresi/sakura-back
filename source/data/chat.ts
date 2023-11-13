@@ -1,29 +1,36 @@
 import Database from "@src/clients/database";
-import { Chat, Message, Prisma, User } from "@prisma/client";
-import { v4 as uuidv4 } from "uuid";
+import { Chat } from "@prisma/client";
 
 const db = Database.instance;
 
-type ChatInput = {
-  chatId: string;
-  participants: number[];
-};
-
 export default {
-  createChatRoom: async function (userId: number, friendId: number) {
-    const chatId = uuidv4();
-    const newChat = await db.chat.create({
-      data: {
-        chatId,
+  createChatRoom: async function (userId: string, friendId: string) {
+    const existingChat = await db.chat.findFirst({
+      where: {
         participants: {
-          connect: [{ id: userId }, { id: friendId }],
+          some: {
+            id: {
+              in: [userId, friendId],
+            },
+          },
         },
       },
     });
-    return newChat;
+    if (existingChat) {
+      return existingChat.id;
+    } else {
+      const newChat = await db.chat.create({
+        data: {
+          participants: {
+            connect: [{ id: userId }, { id: friendId }],
+          },
+        },
+      });
+      return newChat.id;
+    }
   },
-  getUserChats: async function (userId: number): Promise<Chat[]> {
-    const userChats = await db.chat.findMany({
+  getUserChats: async function (userId: string): Promise<Chat[]> {
+    return db.chat.findMany({
       where: {
         participants: {
           some: {
@@ -51,12 +58,10 @@ export default {
         },
       },
     });
-
-    return userChats;
   },
   findExistingChat: async function (
-    userId: number,
-    friendId: number
+    userId: string,
+    friendId: string
   ): Promise<Chat | null> {
     const existingChat = await db.chat.findFirst({
       where: {
@@ -71,9 +76,9 @@ export default {
   },
   getChatByChatId: async function (
     chatId: string
-  ): Promise<{ id: number; message: string; chatId: string }[]> {
+  ): Promise<{ id: string; message: string; chatId: string }[]> {
     const chat = await db.chat.findUnique({
-      where: { chatId },
+      where: { id: chatId },
       include: {
         messages: {
           select: {

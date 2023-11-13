@@ -3,11 +3,11 @@ import config from "config";
 
 const redis = Redis.instance;
 
-export const setRefreshToken = (userId: number, refreshToken: string) => {
+export const setRefreshToken = (userId: string, refreshToken: string) => {
   return redis.setex(`refresh_token:${userId}`, 86400, refreshToken);
 };
 
-export const getRefreshToken = async (userId: number) => {
+export const getRefreshToken = async (userId: string) => {
   try {
     const refreshToken = await redis.get(`refresh_token:${userId}`);
     return refreshToken;
@@ -17,7 +17,7 @@ export const getRefreshToken = async (userId: number) => {
   }
 };
 
-export const deleteRefreshToken = async (userId: number, refreshToken: string) => {
+export const deleteRefreshToken = async (userId: string, refreshToken: string) => {
   try {
     const storedRefreshToken = await redis.get(`refresh_token:${userId}`);
     if (storedRefreshToken === refreshToken) {

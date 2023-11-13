@@ -46,7 +46,7 @@ const options: swaggerJsdoc.Options = {
           type: "object",
           properties: {
             id: {
-              type: "integer",
+              type: "string",
             },
             username: {
               type: "string",
@@ -66,13 +66,13 @@ const options: swaggerJsdoc.Options = {
                 type: "object",
                 properties: {
                   id: {
-                    type: "integer",
+                    type: "string",
                   },
                   fromId: {
-                    type: "integer",
+                    type: "string",
                   },
                   toId: {
-                    type: "integer",
+                    type: "string",
                   },
                   status: {
                     type: "string",
@@ -89,13 +89,13 @@ const options: swaggerJsdoc.Options = {
                 type: "object",
                 properties: {
                   id: {
-                    type: "integer",
+                    type: "string",
                   },
                   fromId: {
-                    type: "integer",
+                    type: "string",
                   },
                   toId: {
-                    type: "integer",
+                    type: "string",
                   },
                   status: {
                     type: "string",
@@ -113,13 +113,13 @@ const options: swaggerJsdoc.Options = {
           type: "object",
           properties: {
             id: {
-              type: "integer",
+              type: "string",
             },
             fromId: {
-              type: "integer",
+              type: "string",
             },
             toId: {
-              type: "integer",
+              type: "string",
             },
             status: {
               type: "string",

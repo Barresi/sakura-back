@@ -11,7 +11,7 @@ export default async function (req: Request, res: Response, next: NextFunction) 
   }
 
   const payload = verifyAccessToken(accessToken);
-  if (!payload || typeof payload.userId !== "number") {
+  if (!payload || typeof payload.userId !== "string") {
     return res.status(403).json({
       msg: "Access token устарел",
     });

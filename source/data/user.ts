@@ -19,7 +19,7 @@ export default {
   getUserByEmail: async (email: string) => {
     return db.user.findUnique({ where: { email } });
   },
-  getUserById: async (userId: number) => {
+  getUserById: async (userId: string) => {
     return db.user.findUnique({
       where: {
         id: userId,

@@ -25,11 +25,7 @@ export const setupChatEvent = (io: Server) => {
     );
     console.log(`User with userId: ${userId} socketId: ${socket.id} connected`);
 
-    // const chat = await Chat.createChatRoom(
-    //   String(chatId),
-    //   Number(userId),
-    //   Number(friendId)
-    // );
+    // присоединение к чат комнате
     socket.join(chatId);
     socket.emit("chatRoom", chatId);
 
@@ -37,7 +33,7 @@ export const setupChatEvent = (io: Server) => {
     console.log(
       `User with userId: ${userId} socketId: ${socket.id} joined the chat ${chatId}`
     );
-
+    // история чата, если существует
     const messages = await Chat.getChatByChatId(String(chatId));
     if (messages) {
       socket.emit("chatMessages", messages);
