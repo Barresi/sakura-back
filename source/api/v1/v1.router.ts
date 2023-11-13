@@ -786,13 +786,19 @@ v1.use("/friend-requests", firendRequests);
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token устарел, Вы не являетесь друзьями с этим пользователем
+ *               msg: Access token устарел
  *       '404':
  *         description: Not found
  *         content:
  *           application/json:
  *             example:
  *               msg: Пользователь не найден
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Чат уже существует
  *       '500':
  *         description: Internal server error
  *         content:

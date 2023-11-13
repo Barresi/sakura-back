@@ -18,11 +18,9 @@ export default {
       return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const areFriends = await Friend.areFriends(userId, friendId);
-    if (!areFriends) {
-      return res
-        .status(403)
-        .json({ msg: "Вы не являетесь друзьями с этим пользователем" });
+    const chatExists = await Chat.findExistingChat(userId, friendId);
+    if (chatExists) {
+      return res.status(409).json({ msg: "Чат уже существует" });
     }
 
     const chat = await Chat.createChatRoom(userId, friendId);

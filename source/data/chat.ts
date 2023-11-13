@@ -54,6 +54,21 @@ export default {
 
     return userChats;
   },
+  findExistingChat: async function (
+    userId: number,
+    friendId: number
+  ): Promise<Chat | null> {
+    const existingChat = await db.chat.findFirst({
+      where: {
+        AND: [
+          { participants: { some: { id: userId } } },
+          { participants: { some: { id: friendId } } },
+        ],
+      },
+    });
+
+    return existingChat;
+  },
   getChatByChatId: async function (
     chatId: string
   ): Promise<{ id: number; message: string; chatId: string }[]> {
