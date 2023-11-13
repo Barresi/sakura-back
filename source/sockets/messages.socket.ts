@@ -25,11 +25,11 @@ export const setupChatEvent = (io: Server) => {
     );
     console.log(`User with userId: ${userId} socketId: ${socket.id} connected`);
 
-    const chat = await Chat.createChatRoom(
-      String(chatId),
-      Number(userId),
-      Number(friendId)
-    );
+    // const chat = await Chat.createChatRoom(
+    //   String(chatId),
+    //   Number(userId),
+    //   Number(friendId)
+    // );
     socket.join(chatId);
     socket.emit("chatRoom", chatId);
 

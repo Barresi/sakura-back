@@ -3,6 +3,7 @@ import auth from "./auth/auth.router";
 import friends from "./friends/friends.router";
 import users from "./users/users.router";
 import firendRequests from "./friendRequests/friendRequests.router";
+import messenger from "./messenger/messenger.router";
 
 const v1 = Router();
 
@@ -22,7 +23,7 @@ const v1 = Router();
  *             $ref: '#/components/schemas/UserRegistration'
  *     responses:
  *       '200':
- *         description: Created
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -185,7 +186,7 @@ const v1 = Router();
  *               - refreshToken
  *     responses:
  *       '200':
- *         description: No content
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -327,7 +328,7 @@ v1.use("/auth", auth);
  *           type: integer
  *     responses:
  *       '200':
- *         description: Created
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -428,7 +429,7 @@ v1.use("/users", users);
  *       - bearerAuth: []
  *     responses:
  *       '200':
- *         description: No content
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -743,5 +744,115 @@ v1.use("/friends", friends);
  */
 
 v1.use("/friend-requests", firendRequests);
+
+/**
+ * @openapi
+ * /api/v1/messenger/create-chat:
+ *   post:
+ *     summary: Create a chat between two users
+ *     tags:
+ *       - Messenger
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               friendId:
+ *                 type: integer
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 chatId:
+ *                   type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел, Вы не являетесь друзьями с этим пользователем
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/messenger/user-chats:
+ *   get:
+ *     summary: Get all chats for a user
+ *     tags:
+ *       - Messenger
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userChats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: number
+ *                       message:
+ *                         type: string
+ *                       chatId:
+ *                         type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+v1.use("/messenger", messenger);
 
 export default v1;
