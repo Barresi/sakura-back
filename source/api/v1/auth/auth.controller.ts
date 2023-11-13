@@ -2,39 +2,33 @@ import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcrypt";
 import { signup as validateSignup } from "./auth.validation";
 import User from "@src/data/user";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyAccessToken,
-  verifyRefreshToken,
-} from "./jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@src/jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 
 export default {
   signup: async function signup(req: Request, res: Response) {
-
     const body = validateSignup(req, res);
     if (!body) {
-      res.status(404).json({ message: "Invalid user data" });
+      res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
       return;
     }
 
-    const existingUser = await User.getViaEmail(body.email);
+    const existingUser = await User.getUserByEmail(body.email);
     if (existingUser) {
-      res.status(409).json({ message: "Этот email уже зарегестрирован" });
+      res.status(409).json({ msg: "Этот email уже зарегистрирован" });
       return;
     }
 
     const hashedPassword = await hash(body.password, await genSalt());
-    const user = await User.create({ ...body, password: hashedPassword });
+    const user = await User.createUser({ ...body, password: hashedPassword });
 
-    res.json({ id: user.id });
+    res.status(200).json({ id: user.id });
   },
 
   login: async function login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const user = await User.getViaEmail(email);
+    const user = await User.getUserByEmail(email);
     if (!user) {
       return res.status(401).json({ msg: "Неверный email или пароль" });
     }
@@ -49,12 +43,14 @@ export default {
 
     await setRefreshToken(user.id, refreshToken);
 
-    const userWithoutPassword = { id: user.id, email: user.email };
+    const userWithoutPassword = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
 
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
-
-    res.json({ accessToken, refreshToken, userWithoutPassword });
+    res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
   },
 
   token: async function token(req: Request, res: Response) {
@@ -80,10 +76,7 @@ export default {
     await setRefreshToken(payload.userId, newRefreshToken);
     await deleteRefreshToken(payload.userId, refreshToken);
 
-    // res.cookie("accessToken", accessToken, { maxAge: 180000, httpOnly: true });
-    // res.cookie("refreshToken", refreshToken, { maxAge: 86400000, httpOnly: true });
-
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    res.status(200).json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
   logout: async function logout(req: Request, res: Response) {
@@ -99,33 +92,16 @@ export default {
     }
 
     await deleteRefreshToken(payload.userId, refreshToken);
-
-    // res.clearCookie("accessToken");
-    // res.clearCookie("refreshToken");
-
-    res.sendStatus(204);
+    res.status(200).json({ msg: "Вы успешно вышли из своего аккаунта" });
   },
 
-  protectedUser: async function protectedUser(req: Request, res: Response) {
-    const authHeader = req.headers["authorization"];
-    const accessToken = authHeader && authHeader.split(" ")[1];
-
-    if (!accessToken) {
-      return res.status(401).json({ msg: "Access token не предоставлен" });
-    }
-
-    const payload = verifyAccessToken(accessToken);
-    if (!payload || typeof payload.userId !== "number") {
-      return res.status(403).json({
-        msg: "Access token устарел. Пожалуйста, обновите токен или авторизуйтесь заново",
-      });
-    }
-
-    const user = await User.getById(payload.userId);
+  userInfo: async function (req: Request, res: Response) {
+    const userId = req.userId;
+    const user = await User.getUserById(userId);
     if (!user) {
       return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    res.json({ user });
+    res.status(200).json({ user });
   },
 };

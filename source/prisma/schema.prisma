@@ -12,31 +12,41 @@ enum Role {
   ADMIN
 }
 
-model User {
-  id           Int          @id @default(autoincrement())
-  // main part
-  username     String?      @unique
-  firstName    String
-  lastName     String
-  email        String       @unique
-  password     String
-  // - - -
-  role         Role         @default(USER)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  chats        Chat[]       @relation("Participants")
-  sentMessages Message[]    @relation("Sender")
-  friends      Friendship[] @relation("Friends")
-  friended     Friendship[] @relation("Friended")
+enum RequestStatus {
+  PENDING
+  ACCEPTED
 }
 
-model Friendship {
-  id           Int          @id @default(autoincrement())
-  from         User         @relation("Friends", fields: [fromId], references: [id])
-  fromId       Int
-  to           User         @relation("Friended", fields: [toId], references: [id])
-  toId         Int
-  createdAt    DateTime     @default(now())
+model User {
+  id        Int          @id @default(autoincrement())
+  // main part
+  username  String?      @unique
+  firstName String
+  lastName  String
+  email     String       @unique
+  password  String
+  // - - -
+  role      Role         @default(USER)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  friends   Friend[] @relation("Friends")
+  friended  Friend[] @relation("Friended")
+  chats     Chat[]       @relation("Participants")
+  messages  Message[]    @relation("Sender")
+}
+
+model Friend {
+  id        Int  @id @default(autoincrement())
+  from      User @relation("Friends", fields: [fromId], references: [id])
+  fromId    Int
+  to        User @relation("Friended", fields: [toId], references: [id])
+  toId      Int
+
+  status    RequestStatus
+
+  createdAt DateTime @default(now())
+
+  @@unique([fromId, toId])
 }
 
 model Chat {

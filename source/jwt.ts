@@ -1,5 +1,4 @@
-import jwt from "jsonwebtoken";
-import { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "config";
 
 export const generateAccessToken = (userId: number): string => {
@@ -20,6 +19,7 @@ export const verifyAccessToken = (token: string): JwtPayload | null => {
       token,
       String(config.get("auth.accessTokenSecret"))
     ) as JwtPayload;
+
     return payload;
   } catch (error) {
     return null;
@@ -32,6 +32,7 @@ export const verifyRefreshToken = (token: string): JwtPayload | null => {
       token,
       String(config.get("auth.refreshTokenSecret"))
     ) as JwtPayload;
+
     return payload;
   } catch (error) {
     return null;
