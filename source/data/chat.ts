@@ -8,7 +8,7 @@ export default {
     const existingChat = await db.chat.findFirst({
       where: {
         participants: {
-          some: {
+          every: {
             id: {
               in: [userId, friendId],
             },
