@@ -85,6 +85,7 @@ export default {
             senderId: true,
             text: true,
             chatId: true,
+            createdAt: true,
           },
         },
       },
@@ -98,6 +99,7 @@ export default {
       id: message.senderId,
       message: message.text,
       chatId: message.chatId,
+      createdAt: message.createdAt,
     }));
 
     return messages;
