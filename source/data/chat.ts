@@ -1,5 +1,5 @@
 import Database from "@src/clients/database";
-import { Chat } from "@prisma/client";
+import { Chat, Message } from "@prisma/client";
 
 const db = Database.instance;
 
@@ -59,24 +59,7 @@ export default {
       },
     });
   },
-  findExistingChat: async function (
-    userId: string,
-    friendId: string
-  ): Promise<Chat | null> {
-    const existingChat = await db.chat.findFirst({
-      where: {
-        AND: [
-          { participants: { some: { id: userId } } },
-          { participants: { some: { id: friendId } } },
-        ],
-      },
-    });
-
-    return existingChat;
-  },
-  getChatByChatId: async function (
-    chatId: string
-  ): Promise<{ id: string; message: string; chatId: string }[]> {
+  getChatByChatId: async function (chatId: string): Promise<Partial<Message>[]> {
     const chat = await db.chat.findUnique({
       where: { id: chatId },
       include: {
@@ -86,6 +69,7 @@ export default {
             text: true,
             chatId: true,
             createdAt: true,
+            updatedAt: true,
           },
         },
       },
@@ -96,10 +80,11 @@ export default {
     }
 
     const messages = chat.messages.map((message) => ({
-      id: message.senderId,
-      message: message.text,
+      senderId: message.senderId,
+      text: message.text,
       chatId: message.chatId,
       createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
     }));
 
     return messages;

@@ -1,5 +1,4 @@
 import Redis from "@src/clients/redis";
-import config from "config";
 
 const redis = Redis.instance;
 
@@ -8,22 +7,12 @@ export const setRefreshToken = (userId: string, refreshToken: string) => {
 };
 
 export const getRefreshToken = async (userId: string) => {
-  try {
-    const refreshToken = await redis.get(`refresh_token:${userId}`);
-    return refreshToken;
-  } catch (error) {
-    console.error("Error getting refresh token:", error);
-    return null;
-  }
+  return redis.get(`refresh_token:${userId}`);
 };
 
 export const deleteRefreshToken = async (userId: string, refreshToken: string) => {
-  try {
-    const storedRefreshToken = await redis.get(`refresh_token:${userId}`);
-    if (storedRefreshToken === refreshToken) {
-      await redis.del(`refresh_token:${userId}`);
-    }
-  } catch (error) {
-    console.error("Error deleting refresh token:", error);
+  const storedRefreshToken = await redis.get(`refresh_token:${userId}`);
+  if (storedRefreshToken === refreshToken) {
+    await redis.del(`refresh_token:${userId}`);
   }
 };
