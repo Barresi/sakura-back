@@ -73,11 +73,6 @@ export const setupChatEvent = (io: Server) => {
           chatId: chatId,
         });
 
-        const updatedHistory = await Chat.getChatHistoryByChatId(chatId);
-        if (updatedHistory) {
-          io.to(chatId).emit(GET_HISTORY_EVENT, updatedHistory);
-        }
-
         const lastMessage = await Message.getLastMessageByChatId(chatId);
         if (lastMessage) {
           io.to(chatId).emit(GET_MESSAGE_EVENT, lastMessage);
