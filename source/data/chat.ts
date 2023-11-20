@@ -50,6 +50,7 @@ export default {
             text: true,
             chatId: true,
             createdAt: true,
+            updatedAt: true,
           },
           orderBy: {
             createdAt: "desc",
@@ -59,7 +60,7 @@ export default {
       },
     });
   },
-  getChatByChatId: async function (chatId: string): Promise<Partial<Message>[]> {
+  getChatHistoryByChatId: async function (chatId: string): Promise<Partial<Message>[]> {
     const chat = await db.chat.findUnique({
       where: { id: chatId },
       include: {

@@ -12,7 +12,8 @@ export const setupChatEvent = (io: Server) => {
   const JOIN_CHAT_EVENT = "joinChat";
   const LEAVE_CHAT_EVENT = "leaveChat";
   const SEND_MESSAGE_EVENT = "sendMessage";
-  const GET_MESSAGES_EVENT = "getMessages";
+  const GET_MESSAGE_EVENT = "getMessage";
+  const GET_HISTORY_EVENT = "getHistory";
 
   io.on(
     "connection",
@@ -41,19 +42,11 @@ export const setupChatEvent = (io: Server) => {
           `User with userId: ${userId} socketId: ${socket.id} joined the chat ${chatId}`
         );
 
-        const messages = await Chat.getChatByChatId(chatId);
+        const history = await Chat.getChatHistoryByChatId(chatId);
 
-        if (messages) {
-          io.to(chatId).emit(GET_MESSAGES_EVENT, messages);
+        if (history) {
+          io.to(chatId).emit(GET_HISTORY_EVENT, history);
         }
-
-        socket.on(GET_MESSAGES_EVENT, async () => {
-          const messages = await Chat.getChatByChatId(chatId);
-
-          if (messages) {
-            socket.emit(GET_MESSAGES_EVENT, messages);
-          }
-        });
       });
 
       socket.on(LEAVE_CHAT_EVENT, async (chatId) => {
@@ -80,9 +73,14 @@ export const setupChatEvent = (io: Server) => {
           chatId: chatId,
         });
 
-        const updatedMessages = await Chat.getChatByChatId(chatId);
-        if (updatedMessages) {
-          io.to(chatId).emit(GET_MESSAGES_EVENT, updatedMessages);
+        const updatedHistory = await Chat.getChatHistoryByChatId(chatId);
+        if (updatedHistory) {
+          io.to(chatId).emit(GET_HISTORY_EVENT, updatedHistory);
+        }
+
+        const lastMessage = await Message.getLastMessageByChatId(chatId);
+        if (lastMessage) {
+          io.to(chatId).emit(GET_MESSAGE_EVENT, lastMessage);
         }
       });
 
