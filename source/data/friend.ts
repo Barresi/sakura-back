@@ -4,8 +4,8 @@ import Database from "@src/clients/database";
 const db = Database.instance;
 
 export default {
-  areFriends: async (userId: number, friendId: number) => {
-    const friendRelationship = await db.friend.findFirst({
+  areFriends: async (userId: string, friendId: string) => {
+    return db.friend.findFirst({
       where: {
         OR: [
           { fromId: userId, toId: friendId },
@@ -14,10 +14,9 @@ export default {
         status: RequestStatus.ACCEPTED,
       },
     });
-    return friendRelationship !== null;
   },
-  getAllFriends: async (userId: number) => {
-    return await db.friend.findMany({
+  getAllFriends: async (userId: string) => {
+    return db.friend.findMany({
       where: {
         OR: [
           {
@@ -32,8 +31,8 @@ export default {
       },
     });
   },
-  deleteFriend: async (userId: number, friendId: number) => {
-    await db.friend.deleteMany({
+  deleteFriend: async (userId: string, friendId: string) => {
+    return db.friend.deleteMany({
       where: {
         OR: [
           { fromId: userId, toId: friendId },

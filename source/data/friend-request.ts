@@ -4,32 +4,26 @@ import Database from "@src/clients/database";
 const db = Database.instance;
 
 export default {
-  findRequestById: async (requestId: number, userId: number) => {
-    return await db.friend.findUnique({
+  findRequestById: async (requestId: string, userId: string) => {
+    return db.friend.findUnique({
       where: {
         id: requestId,
         OR: [{ fromId: userId }, { toId: userId }],
       },
     });
   },
-  findPendingRequest: async (fromId: number, toId: number) => {
-    return await db.friend.findFirst({
+  findPendingRequest: async (fromId: string, toId: string) => {
+    return db.friend.findFirst({
       where: {
         status: RequestStatus.PENDING,
         OR: [
-          {
-            fromId,
-            toId,
-          },
-          {
-            fromId: toId,
-            toId: fromId,
-          },
+          { fromId: fromId, toId: toId },
+          { fromId: toId, toId: fromId },
         ],
       },
     });
   },
-  sendFriendRequest: async (userId: number, friendId: number) => {
+  sendFriendRequest: async (userId: string, friendId: string) => {
     return db.friend.create({
       data: {
         fromId: userId,
@@ -38,23 +32,23 @@ export default {
       },
     });
   },
-  getAllReceivedRequests: async function (userId: number) {
-    return await db.friend.findMany({
+  getAllReceivedRequests: async function (userId: string) {
+    return db.friend.findMany({
       where: {
         toId: userId,
         status: RequestStatus.PENDING,
       },
     });
   },
-  getAllSentRequests: async function (userId: number) {
-    return await db.friend.findMany({
+  getAllSentRequests: async function (userId: string) {
+    return db.friend.findMany({
       where: {
         fromId: userId,
         status: RequestStatus.PENDING,
       },
     });
   },
-  acceptRequest: async function (userId: number, requestId: number) {
+  acceptRequest: async function (userId: string, requestId: string) {
     const acceptedRequest = await db.friend.findFirst({
       where: {
         id: requestId,
@@ -69,7 +63,7 @@ export default {
       });
     }
   },
-  rejectRequest: async function (userId: number, requestId: number) {
+  rejectRequest: async function (userId: string, requestId: string) {
     const rejectedRequest = await db.friend.findFirst({
       where: {
         id: requestId,
@@ -85,7 +79,7 @@ export default {
       });
     }
   },
-  cancelRequest: async function (userId: number, requestId: number) {
+  cancelRequest: async function (userId: string, requestId: string) {
     const canceledRequest = await db.friend.findFirst({
       where: {
         id: requestId,

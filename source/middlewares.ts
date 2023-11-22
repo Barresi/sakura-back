@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 declare global {
   namespace Express {
     export interface Request {
-      userId: number;
+      userId: string;
     }
   }
 }

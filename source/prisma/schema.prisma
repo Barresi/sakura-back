@@ -18,33 +18,52 @@ enum RequestStatus {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        String          @id @default(uuid())
   // main part
-  username  String? @unique
+  username  String?         @unique
   firstName String
   lastName  String
-  email     String  @unique
+  email     String          @unique
   password  String
   // - - -
-  role      Role    @default(USER)
-
-  friends   Friend[] @relation("Friends")
-  friended  Friend[] @relation("Friended")
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  role      Role            @default(USER)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  friends   Friend[]        @relation("Friends")
+  friended  Friend[]        @relation("Friended")
+  chats     Chat[]          @relation("Participants")
+  messages  Message[]       @relation("Sender")
 }
 
 model Friend {
-  id        Int  @id @default(autoincrement())
-  from      User @relation("Friends", fields: [fromId], references: [id])
-  fromId    Int
-  to        User @relation("Friended", fields: [toId], references: [id])
-  toId      Int
+  id        String          @id @default(uuid())
+  from      User            @relation("Friends", fields: [fromId], references: [id])
+  fromId    String
+  to        User            @relation("Friended", fields: [toId], references: [id])
+  toId      String
 
   status    RequestStatus
 
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
 
   @@unique([fromId, toId])
+}
+
+model Chat {
+  id           String       @id @default(uuid())
+  participants User[]       @relation("Participants")
+  messages     Message[]    @relation("Messages")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Message {
+  id           String       @id @default(uuid())
+  sender       User         @relation("Sender", fields: [senderId], references: [id])
+  senderId     String
+  text         String
+  chat         Chat         @relation("Messages" ,fields: [chatId], references: [id])
+  chatId       String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }

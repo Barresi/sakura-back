@@ -30,11 +30,7 @@ export default {
   },
   acceptRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const requestId = parseInt(req.params.requestId, 10);
-
-    if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Неверный формат request ID" });
-    }
+    const requestId = req.params.requestId;
 
     const user = await User.getUserById(userId);
     if (!user) {
@@ -62,11 +58,7 @@ export default {
   },
   rejectRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const requestId = parseInt(req.params.requestId, 10);
-
-    if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Неверный формат request ID" });
-    }
+    const requestId = req.params.requestId;
 
     const user = await User.getUserById(userId);
     if (!user) {
@@ -92,11 +84,7 @@ export default {
   },
   cancelRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const requestId = parseInt(req.params.requestId, 10);
-
-    if (isNaN(requestId) || requestId <= 0) {
-      return res.status(400).json({ msg: "Неверный формат request ID" });
-    }
+    const requestId = req.params.requestId;
 
     const user = await User.getUserById(userId);
     if (!user) {

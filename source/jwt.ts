@@ -1,13 +1,13 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "config";
 
-export const generateAccessToken = (userId: number): string => {
+export const generateAccessToken = (userId: string): string => {
   return jwt.sign({ userId }, String(config.get("auth.accessTokenSecret")), {
     expiresIn: "5m",
   });
 };
 
-export const generateRefreshToken = (userId: number): string => {
+export const generateRefreshToken = (userId: string): string => {
   return jwt.sign({ userId }, String(config.get("auth.refreshTokenSecret")), {
     expiresIn: "30d",
   });

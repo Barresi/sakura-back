@@ -10,11 +10,7 @@ export default {
   },
   sendFriendRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const friendId = parseInt(req.params.friendId, 10);
-
-    if (isNaN(friendId) || friendId <= 0) {
-      return res.status(400).json({ msg: "Неверный формат friend ID" });
-    }
+    const friendId = req.params.friendId;
 
     if (userId === friendId) {
       return res

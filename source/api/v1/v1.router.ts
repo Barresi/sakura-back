@@ -3,6 +3,7 @@ import auth from "./auth/auth.router";
 import friends from "./friends/friends.router";
 import users from "./users/users.router";
 import firendRequests from "./friendRequests/friendRequests.router";
+import messenger from "./messenger/messenger.router";
 
 const v1 = Router();
 
@@ -22,7 +23,7 @@ const v1 = Router();
  *             $ref: '#/components/schemas/UserRegistration'
  *     responses:
  *       '200':
- *         description: Created
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -85,7 +86,7 @@ const v1 = Router();
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
+ *                       type: string
  *                     firstName:
  *                       type: string
  *                     lastName:
@@ -185,7 +186,7 @@ const v1 = Router();
  *               - refreshToken
  *     responses:
  *       '200':
- *         description: No content
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -231,7 +232,7 @@ const v1 = Router();
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: integer
+ *                       type: string
  *                     email:
  *                       type: string
  *                   required:
@@ -324,10 +325,10 @@ v1.use("/auth", auth);
  *         required: true
  *         description: The ID of the user to send a friend request to.
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       '200':
- *         description: Created
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -337,7 +338,7 @@ v1.use("/auth", auth);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, Вы не можете отправить заявку в друзья самому себе, Вы уже друзья с этим пользователем, Вы уже отправили заявку в друзья этому пользователю
+ *               msg: Вы не можете отправить заявку в друзья самому себе, Вы уже друзья с этим пользователем, Вы уже отправили заявку в друзья этому пользователю
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -421,14 +422,14 @@ v1.use("/users", users);
  *       - in: path
  *         name: friendId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend to delete
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       '200':
- *         description: No content
+ *         description: OK
  *         content:
  *           application/json:
  *             example:
@@ -438,7 +439,7 @@ v1.use("/users", users);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат friend ID, Вы не можете удалить себя из друзей
+ *               msg: Вы не можете удалить себя из друзей
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -487,11 +488,11 @@ v1.use("/friends", friends);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   fromId:
- *                     type: integer
+ *                     type: string
  *                   toId:
- *                     type: integer
+ *                     type: string
  *                   status:
  *                     type: string
  *                   createdAt:
@@ -542,11 +543,11 @@ v1.use("/friends", friends);
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
+ *                     type: string
  *                   fromId:
- *                     type: integer
+ *                     type: string
  *                   toId:
- *                     type: integer
+ *                     type: string
  *                   status:
  *                     type: string
  *                   createdAt:
@@ -588,7 +589,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to accept
  *     security:
@@ -605,7 +606,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверный формат request ID, Вы уже приняли эту заявку, Вы не можете принять свою заявку
+ *               msg: Вы уже приняли эту заявку, Вы не можете принять свою заявку
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -643,7 +644,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to reject
  *     security:
@@ -655,12 +656,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Вы отклонили заявку в друзья от {user.firstName} {user.lastName}
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             example:
- *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -698,7 +693,7 @@ v1.use("/friends", friends);
  *       - in: path
  *         name: requestId
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *         description: The ID of the friend request to cancel
  *     security:
@@ -710,12 +705,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Вы отменили заявку в друзья от {user.firstName} {user.lastName}
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             example:
- *               msg: Неверный формат request ID
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -743,5 +732,121 @@ v1.use("/friends", friends);
  */
 
 v1.use("/friend-requests", firendRequests);
+
+/**
+ * @openapi
+ * /api/v1/messenger/create-chat:
+ *   post:
+ *     summary: Create a chat between two users
+ *     tags:
+ *       - Messenger
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               friendId:
+ *                 type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 chatId:
+ *                   type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Чат уже существует
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/messenger/user-chats:
+ *   get:
+ *     summary: Get all chats for a user
+ *     tags:
+ *       - Messenger
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userChats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       message:
+ *                         type: string
+ *                       chatId:
+ *                         type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+v1.use("/messenger", messenger);
 
 export default v1;
