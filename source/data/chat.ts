@@ -4,6 +4,27 @@ import { Chat, Message } from "@prisma/client";
 const db = Database.instance;
 
 export default {
+  getFriendIdFromChat: async function (
+    chatId: string,
+    userId: string
+  ): Promise<string | null> {
+    const chat = await db.chat.findUnique({
+      where: { id: chatId },
+      include: {
+        participants: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (!chat) {
+      return null;
+    }
+    const participants = chat.participants.map((participant) => participant.id);
+    const friendId = participants.find((participantId) => participantId !== userId);
+    return friendId || null;
+  },
   createChatRoom: async function (userId: string, friendId: string) {
     const existingChat = await db.chat.findFirst({
       where: {
@@ -75,11 +96,9 @@ export default {
         },
       },
     });
-
     if (!chat) {
       return [];
     }
-
     const messages = chat.messages.map((message) => ({
       senderId: message.senderId,
       text: message.text,
@@ -87,7 +106,6 @@ export default {
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,
     }));
-
     return messages;
   },
 };
