@@ -15,7 +15,8 @@ export default function wrapSocket<T>(
     try {
       await fn(socket, ...args);
     } catch (error) {
-      logger.error("Error in socket event handler:", error);
+      const userId = socket.handshake.query.userId as string;
+      logger.error(`Error in ${fn.name} for user ${userId}:`, error);
     }
   };
 }
