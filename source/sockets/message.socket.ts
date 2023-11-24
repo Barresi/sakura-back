@@ -18,7 +18,7 @@ export const handleMessageEvents = (io: Server, socket: Socket) => {
     if (lastMessage) {
       io.to(chatId).emit(GET_MESSAGE_EVENT, lastMessage);
 
-      handleNtfMessageEvents(io, socket, chatId, lastMessage);
+      handleNtfMessageEvents(io, userId, chatId, lastMessage);
     }
   });
 };

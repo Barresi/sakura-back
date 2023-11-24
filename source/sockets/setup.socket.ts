@@ -20,7 +20,6 @@ export const setupSocketConnection = (io: Server) => {
         logger.error("Invalid userId received");
         return;
       }
-
       await redis.hset("userSockets", `userId: ${userId}`, socket.id);
       logger.info(`User with userId: ${userId} socketId: ${socket.id} connected`);
 
@@ -31,6 +30,6 @@ export const setupSocketConnection = (io: Server) => {
         await redis.hdel("userSockets", `userId: ${userId}`, socket.id);
         logger.info(`User with userId: ${userId} socketId: ${socket.id} disconnected`);
       });
-    })
+    }, CONNECTION)
   );
 };
