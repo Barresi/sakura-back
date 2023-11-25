@@ -42,7 +42,7 @@ export default {
     }
 
     await FriendRequest.sendFriendRequest(userId, friendId);
-    await Notification.sendFriendRequestNtf(userId, friendId);
+    await Notification.sendFriendRequestNtf(userId, friendId, req.app.get("io"));
     res.status(200).json({
       msg: `Вы отправили заявку в друзья ${friend.firstName} ${friend.lastName}`,
     });

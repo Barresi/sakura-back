@@ -33,6 +33,7 @@ async function main() {
   app.use("/api", api);
 
   setupSocketConnection(io);
+  app.set("io", io);
 
   app.use(postMiddlewares());
 

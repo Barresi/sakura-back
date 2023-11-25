@@ -57,7 +57,7 @@ export default {
     if (!friendId) {
       return res.status(404).json({ msg: "Друг не найден" });
     }
-    await Notification.sendAcceptRequestNtf(userId, friendId);
+    await Notification.sendAcceptRequestNtf(userId, friendId, req.app.get("io"));
 
     return res
       .status(200)
@@ -87,7 +87,7 @@ export default {
     if (!friendId) {
       return res.status(404).json({ msg: "Друг не найден" });
     }
-    await Notification.sendRejectRequestNtf(userId, friendId);
+    await Notification.sendRejectRequestNtf(userId, friendId, req.app.get("io"));
 
     await FriendRequest.rejectRequest(userId, requestId);
 

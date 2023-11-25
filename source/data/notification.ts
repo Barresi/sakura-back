@@ -1,6 +1,9 @@
 import Database from "@src/clients/database";
+import { Server } from "socket.io";
+import Redis from "@src/clients/redis";
 
 const db = Database.instance;
+const redis = Redis.instance;
 
 export default {
   getUserNotifications: async (userId: string) => {
@@ -14,7 +17,7 @@ export default {
       },
     });
   },
-  sendFriendRequestNtf: async (userId: string, friendId: string) => {
+  sendFriendRequestNtf: async (userId: string, friendId: string, io: Server) => {
     const content = `${userId} подал заявку в друзья`;
     const notification = {
       type: "sendFriendRequest",
@@ -23,9 +26,21 @@ export default {
       recipients: { connect: [{ id: friendId }] },
     };
 
-    return db.notification.create({ data: notification });
+    const createdNotification = await db.notification.create({ data: notification });
+
+    const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
+    if (friendSocketId) {
+      io.to(friendSocketId).emit("notification", {
+        userId,
+        type: "sendFriendRequest",
+        content,
+        notificationId: createdNotification.id,
+      });
+    }
+
+    return createdNotification;
   },
-  sendAcceptRequestNtf: async (userId: string, friendId: string) => {
+  sendAcceptRequestNtf: async (userId: string, friendId: string, io: Server) => {
     const content = `${userId} принял заявку в друзья`;
     const notification = {
       type: "acceptFriendRequest",
@@ -34,9 +49,21 @@ export default {
       recipients: { connect: [{ id: friendId }] },
     };
 
-    return db.notification.create({ data: notification });
+    const createdNotification = await db.notification.create({ data: notification });
+
+    const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
+    if (friendSocketId) {
+      io.to(friendSocketId).emit("notification", {
+        userId,
+        type: "acceptFriendRequest",
+        content,
+        notificationId: createdNotification.id,
+      });
+    }
+
+    return createdNotification;
   },
-  sendRejectRequestNtf: async (userId: string, friendId: string) => {
+  sendRejectRequestNtf: async (userId: string, friendId: string, io: Server) => {
     const content = `${userId} отклонил заявку в друзья`;
     const notification = {
       type: "rejectFriendRequest",
@@ -45,6 +72,18 @@ export default {
       recipients: { connect: [{ id: friendId }] },
     };
 
-    return db.notification.create({ data: notification });
+    const createdNotification = await db.notification.create({ data: notification });
+
+    const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
+    if (friendSocketId) {
+      io.to(friendSocketId).emit("notification", {
+        userId,
+        type: "rejectFriendRequest",
+        content,
+        notificationId: createdNotification.id,
+      });
+    }
+
+    return createdNotification;
   },
 };
