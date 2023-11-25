@@ -4,6 +4,7 @@ import friends from "./friends/friends.router";
 import users from "./users/users.router";
 import firendRequests from "./friendRequests/friendRequests.router";
 import messenger from "./messenger/messenger.router";
+import notifications from "./notifications/notifications.router";
 
 const v1 = Router();
 
@@ -624,7 +625,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена
+ *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -673,7 +674,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена
+ *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -848,5 +849,68 @@ v1.use("/friend-requests", firendRequests);
  */
 
 v1.use("/messenger", messenger);
+
+/**
+ * @openapi
+ * /api/v1/notifications:
+ *   get:
+ *     summary: Get all notifications for a user
+ *     tags:
+ *       - Notifications
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 notifications:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       type:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       read:
+ *                         type: boolean
+ *                         default: false
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Уведомления не найдены
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+v1.use("/notifications", notifications);
 
 export default v1;

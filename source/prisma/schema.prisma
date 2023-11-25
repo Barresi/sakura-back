@@ -18,52 +18,67 @@ enum RequestStatus {
 }
 
 model User {
-  id        String          @id @default(uuid())
-  // main part
-  username  String?         @unique
-  firstName String
-  lastName  String
-  email     String          @unique
-  password  String
-  // - - -
-  role      Role            @default(USER)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  friends   Friend[]        @relation("Friends")
-  friended  Friend[]        @relation("Friended")
-  chats     Chat[]          @relation("Participants")
-  messages  Message[]       @relation("Sender")
+  id            String          @id @default(uuid())
+  username      String?         @unique
+  firstName     String
+  lastName      String
+  email         String          @unique
+  password      String
+  
+  role          Role            @default(USER)
+  friends       Friend[]        @relation("Friends")
+  friended      Friend[]        @relation("Friended")
+  chats         Chat[]          @relation("Participants")
+  messages      Message[]       @relation("Sender")
+  notifications Notification[]  @relation("Recipients")
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Friend {
-  id        String          @id @default(uuid())
-  from      User            @relation("Friends", fields: [fromId], references: [id])
-  fromId    String
-  to        User            @relation("Friended", fields: [toId], references: [id])
-  toId      String
+  id            String          @id @default(uuid())
+  fromId        String
+  toId          String
+  status        RequestStatus
 
-  status    RequestStatus
+  from          User            @relation("Friends", fields: [fromId], references: [id])
+  to            User            @relation("Friended", fields: [toId], references: [id])
 
-  createdAt DateTime        @default(now())
+  createdAt     DateTime        @default(now())
 
   @@unique([fromId, toId])
 }
 
 model Chat {
-  id           String       @id @default(uuid())
-  participants User[]       @relation("Participants")
-  messages     Message[]    @relation("Messages")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id            String          @id @default(uuid())
+  participants  User[]          @relation("Participants")
+  messages      Message[]       @relation("Messages")
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Message {
-  id           String       @id @default(uuid())
-  sender       User         @relation("Sender", fields: [senderId], references: [id])
-  senderId     String
-  text         String
-  chat         Chat         @relation("Messages" ,fields: [chatId], references: [id])
-  chatId       String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id            String          @id @default(uuid())
+  senderId      String
+  text          String
+  chatId        String
+
+  sender        User            @relation("Sender", fields: [senderId], references: [id])
+  chat          Chat            @relation("Messages" ,fields: [chatId], references: [id])
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Notification {
+  id            String          @id @default(uuid())
+  type          String
+  content       String?
+  read          Boolean         @default(false)
+  recipients    User[]          @relation("Recipients")
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
