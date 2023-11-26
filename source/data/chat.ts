@@ -105,7 +105,11 @@ export default {
     const chat = await db.chat.findUnique({
       where: { id: chatId },
       include: {
-        messages: true,
+        messages: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
     });
     if (!chat) {
