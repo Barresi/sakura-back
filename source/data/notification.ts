@@ -5,9 +5,9 @@ import Redis from "@src/clients/redis";
 const db = Database.instance;
 const redis = Redis.instance;
 
-const NTF_USER_SEND_FRIEND_REQUEST = "ntfSendFriendRequest";
-const NTF_USER_ACCEPT_FRIEND_REQUEST = "ntfAcceptFriendRequest";
-const NTF_USER_REJECT_FRIEND_REQUEST = "ntfRejectFriendRequest";
+export const NTF_USER_SEND_FRIEND_EVENT = "ntfSendFriend";
+export const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
+export const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
 
 export default {
   getUserNotifications: async (userId: string) => {
@@ -34,7 +34,7 @@ export default {
 
     const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
     if (friendSocketId) {
-      io.to(friendSocketId).emit(NTF_USER_SEND_FRIEND_REQUEST, {
+      io.to(friendSocketId).emit(NTF_USER_SEND_FRIEND_EVENT, {
         friendId: userId,
         notificationId: createdNotification.id,
       });
@@ -55,7 +55,7 @@ export default {
 
     const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
     if (friendSocketId) {
-      io.to(friendSocketId).emit(NTF_USER_ACCEPT_FRIEND_REQUEST, {
+      io.to(friendSocketId).emit(NTF_USER_ACCEPT_FRIEND_EVENT, {
         friendId: userId,
         notificationId: createdNotification.id,
       });
@@ -76,7 +76,7 @@ export default {
 
     const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
     if (friendSocketId) {
-      io.to(friendSocketId).emit(NTF_USER_REJECT_FRIEND_REQUEST, {
+      io.to(friendSocketId).emit(NTF_USER_REJECT_FRIEND_EVENT, {
         friendId: userId,
         notificationId: createdNotification.id,
       });

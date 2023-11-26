@@ -14,7 +14,7 @@ export const handleMessageEvents = (io: Server, socket: Socket) => {
       chatId: chatId,
     });
 
-    const lastMessage = await Message.getLastMessageByChatId(chatId);
+    const lastMessage = await Message.getLastMessageByChatId(chatId, userId);
     if (lastMessage) {
       io.to(chatId).emit(GET_MESSAGE_EVENT, lastMessage);
 
