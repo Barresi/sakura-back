@@ -18,7 +18,7 @@ export const handleChatEvents = (io: Server, socket: Socket, userId: string) => 
       `User with userId: ${userId} socketId: ${socket.id} joined the chat ${chatId}`
     );
 
-    const history = await Chat.getChatHistoryByChatId(chatId);
+    const history = await Chat.getChatHistoryByChatId(chatId, userId);
     if (history) {
       io.to(chatId).emit(GET_HISTORY_EVENT, history);
     }

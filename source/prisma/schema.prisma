@@ -64,6 +64,7 @@ model Message {
   senderId      String
   text          String
   chatId        String
+  read          Boolean         @default(false)
 
   sender        User            @relation("Sender", fields: [senderId], references: [id])
   chat          Chat            @relation("Messages" ,fields: [chatId], references: [id])

@@ -816,12 +816,36 @@ v1.use("/friend-requests", firendRequests);
  *                   items:
  *                     type: object
  *                     properties:
- *                       id:
- *                         type: string
- *                       message:
- *                         type: string
  *                       chatId:
  *                         type: string
+ *                       participants:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: string
+ *                       newMessage:
+ *                         type: object
+ *                         properties:
+ *                           senderId:
+ *                              type: string
+ *                           text:
+ *                             type: string
+ *                           chatId:
+ *                             type: string
+ *                           read:
+ *                             type: boolean
+ *                           createdAt:
+ *                             type: string
+ *                           updatedAt:
+ *                             type: string
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *                       unread:
+ *                         type: integer
  *       '401':
  *         description: Unauthorized
  *         content:
