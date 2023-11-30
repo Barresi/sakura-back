@@ -15,8 +15,10 @@ export const handleNtfMessageEvents = async (
 
   const friendId = await Chat.getFriendIdFromChat(chatId, userId);
   const friendSocketId = await redis.hget("userSockets", `userId: ${friendId}`);
+  const userChatId = await redis.hget("chatRooms", `userId: ${userId}`);
   const friendChatId = await redis.hget("chatRooms", `userId: ${friendId}`);
-  if (friendSocketId && friendChatId === null) {
+
+  if (friendSocketId && (friendChatId === null || friendChatId !== userChatId)) {
     io.to(friendSocketId).emit(NTF_GET_MESSAGE_EVENT, lastMessage);
   }
 };
