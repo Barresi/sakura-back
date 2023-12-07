@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "@src/data/user";
 import Friend from "@src/data/friend";
 import FriendRequest from "@src/data/friend-request";
+import Notification from "@src/data/notification";
 
 export default {
   getAllUsers: async (req: Request, res: Response) => {
@@ -41,6 +42,7 @@ export default {
     }
 
     await FriendRequest.sendFriendRequest(userId, friendId);
+    await Notification.sendFriendRequestNtf(userId, friendId, req.app.get("io"));
     res.status(200).json({
       msg: `Вы отправили заявку в друзья ${friend.firstName} ${friend.lastName}`,
     });

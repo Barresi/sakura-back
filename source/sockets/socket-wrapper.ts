@@ -9,13 +9,14 @@ const logger = Logger.instance;
  * @returns wrapped async socket event handler
  */
 export default function wrapSocket<T>(
-  fn: (socket: Socket, ...args: any[]) => Promise<T>
+  fn: (socket: Socket, ...args: any[]) => Promise<T>,
+  eventName: string
 ) {
   return async (socket: Socket, ...args: any[]) => {
     try {
       await fn(socket, ...args);
     } catch (error) {
-      logger.error("Error in socket event handler:", error);
+      logger.error(`Error in socket's ${eventName}`, error);
     }
   };
 }

@@ -9,7 +9,7 @@ import config from "config";
 import Logger from "./clients/logger";
 import { postMiddlewares, preMiddlewares } from "./middlewares";
 import api from "./api/router";
-import { setupChatEvent } from "./sockets/messages.socket";
+import { setupSocketConnection } from "./sockets/setup.socket";
 import swaggerDocs from "./clients/swagger";
 
 async function main() {
@@ -32,7 +32,8 @@ async function main() {
 
   app.use("/api", api);
 
-  setupChatEvent(io);
+  setupSocketConnection(io);
+  app.set("io", io);
 
   app.use(postMiddlewares());
 

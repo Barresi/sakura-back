@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "@src/data/user";
 import FriendRequest from "@src/data/friend-request";
+import Notification from "@src/data/notification";
 import { RequestStatus } from "@prisma/client";
 
 export default {
@@ -52,6 +53,12 @@ export default {
 
     await FriendRequest.acceptRequest(userId, requestId);
 
+    const friendId = await FriendRequest.findFriendId(requestId, userId);
+    if (!friendId) {
+      return res.status(404).json({ msg: "Друг не найден" });
+    }
+    await Notification.sendAcceptRequestNtf(userId, friendId, req.app.get("io"));
+
     return res
       .status(200)
       .json({ msg: `Вы приняли заявку в друзья от ${user.firstName} ${user.lastName}` });
@@ -75,6 +82,12 @@ export default {
         .status(403)
         .json({ msg: "Вы можете отклонить только входящие вам заявки" });
     }
+
+    const friendId = await FriendRequest.findFriendId(requestId, userId);
+    if (!friendId) {
+      return res.status(404).json({ msg: "Друг не найден" });
+    }
+    await Notification.sendRejectRequestNtf(userId, friendId, req.app.get("io"));
 
     await FriendRequest.rejectRequest(userId, requestId);
 
