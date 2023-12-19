@@ -1,4 +1,4 @@
-import Logger from "@src/clients/logger";
+import Logger from "../clients/logger";
 import { Socket } from "socket.io";
 
 const logger = Logger.instance;

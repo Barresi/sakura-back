@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import config from "config";
+
+const DB_LOGS = process.env.DB_LOGS;
 
 export default class Database {
-  private static _instance: PrismaClient = Number(config.get("database.logs"))
+  private static _instance: PrismaClient = DB_LOGS
     ? new PrismaClient({ log: [] })
     : new PrismaClient();
 

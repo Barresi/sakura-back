@@ -143,7 +143,7 @@ const options: swaggerJsdoc.Options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 
-function swaggerDocs(app: Express, port: number) {
+function swaggerDocs(app: Express, host: string, port: number) {
   // Swagger page
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -153,7 +153,7 @@ function swaggerDocs(app: Express, port: number) {
     res.send(swaggerSpec);
   });
 
-  logger.info(`Docs available at http://localhost:${port}/docs`);
+  logger.info(`Docs available at http://${host}:${port}/docs`);
 }
 
 export default swaggerDocs;

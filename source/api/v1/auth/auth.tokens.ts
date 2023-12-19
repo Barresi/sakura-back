@@ -1,4 +1,4 @@
-import Redis from "@src/clients/redis";
+import Redis from "../../../clients/redis";
 
 const redis = Redis.instance;
 

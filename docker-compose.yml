@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  sakura-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=${EXPRESS_PORT}
+      - CORS_ORIGIN=${FRONTEND_URL}
+      - DB_URL=${DB_URL}
+      - DB_LOGS=${DB_LOGS}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+    ports:
+      - "5000:5000"
+
+  postgres:
+    image: postgres:15.0
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    container_name: "sakura-postgres"
+    ports:
+      - "5400:5432"
+
+volumes:
+  postgres:

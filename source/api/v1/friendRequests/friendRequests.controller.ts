@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import User from "@src/data/user";
-import FriendRequest from "@src/data/friend-request";
-import Notification from "@src/data/notification";
+import User from "../../../data/user";
+import FriendRequest from "../../../data/friend-request";
+import Notification from "../../../data/notification";
 import { RequestStatus } from "@prisma/client";
 
 export default {

@@ -1,24 +1,24 @@
+import "dotenv/config";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import config from "config";
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET as string;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET as string;
 
 export const generateAccessToken = (userId: string): string => {
-  return jwt.sign({ userId }, String(config.get("auth.accessTokenSecret")), {
+  return jwt.sign({ userId }, ACCESS_TOKEN_SECRET, {
     expiresIn: "5m",
   });
 };
 
 export const generateRefreshToken = (userId: string): string => {
-  return jwt.sign({ userId }, String(config.get("auth.refreshTokenSecret")), {
+  return jwt.sign({ userId }, REFRESH_TOKEN_SECRET, {
     expiresIn: "30d",
   });
 };
 
 export const verifyAccessToken = (token: string): JwtPayload | null => {
   try {
-    const payload = jwt.verify(
-      token,
-      String(config.get("auth.accessTokenSecret"))
-    ) as JwtPayload;
+    const payload = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
 
     return payload;
   } catch (error) {
@@ -28,10 +28,7 @@ export const verifyAccessToken = (token: string): JwtPayload | null => {
 
 export const verifyRefreshToken = (token: string): JwtPayload | null => {
   try {
-    const payload = jwt.verify(
-      token,
-      String(config.get("auth.refreshTokenSecret"))
-    ) as JwtPayload;
+    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET) as JwtPayload;
 
     return payload;
   } catch (error) {

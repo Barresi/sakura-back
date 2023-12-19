@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Notification from "@src/data/notification";
+import Notification from "../../../data/notification";
 
 export default {
   getNotifications: async function (req: Request, res: Response) {
