@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import User from "@src/data/user";
-import Friend from "@src/data/friend";
-import FriendRequest from "@src/data/friend-request";
-import Notification from "@src/data/notification";
+import User from "../../../data/user";
+import Friend from "../../../data/friend";
+import FriendRequest from "../../../data/friend-request";
+import Notification from "../../../data/notification";
 
 export default {
   getAllUsers: async (req: Request, res: Response) => {

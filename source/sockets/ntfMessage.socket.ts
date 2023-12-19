@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
-import Chat from "@src/data/chat";
-import Redis from "@src/clients/redis";
+import Chat from "../data/chat";
+import Redis from "../clients/redis";
 import { Message } from "@prisma/client";
 
 const redis = Redis.instance;

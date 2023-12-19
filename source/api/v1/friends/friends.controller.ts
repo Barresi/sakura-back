@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import User from "@src/data/user";
-import Friend from "@src/data/friend";
+import User from "../../../data/user";
+import Friend from "../../../data/friend";
 
 export default {
   getAllFriends: async (req: Request, res: Response) => {
