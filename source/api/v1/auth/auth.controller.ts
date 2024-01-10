@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
-import { genSalt, hash, compare } from "bcrypt";
+import { genSalt, hash, compare } from "bcryptjs";
 import { signup as validateSignup } from "./auth.validation";
-import User from "@src/data/user";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "@src/jwt";
+import User from "../../../data/user";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 
 export default {

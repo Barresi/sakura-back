@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ctrl from "./users.controller";
-import wrap from "@src/api/async-wrapper";
+import wrap from "../../../api/async-wrapper";
 import guard from "../access-guard";
 
 const users = Router();

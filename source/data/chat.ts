@@ -1,5 +1,5 @@
-import Database from "@src/clients/database";
-import { Chat, Message } from "@prisma/client";
+import Database from "../clients/database";
+import { Message } from "@prisma/client";
 
 const db = Database.instance;
 
