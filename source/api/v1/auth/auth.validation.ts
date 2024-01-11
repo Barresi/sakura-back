@@ -29,6 +29,6 @@ export function security(req: Request, res: Response) {
   try {
     return schema.parse(req.body);
   } catch (error: unknown) {
-    res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
+    res.status(400).json({ msg: "Неверно заполнена форма" });
   }
 }

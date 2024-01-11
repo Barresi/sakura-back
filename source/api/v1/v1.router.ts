@@ -378,7 +378,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверно заполнена форма регистрации, Email и пароль не могут быть пустыми
+ *               msg: Неверно заполнена форма, Email и пароль не могут быть пустыми
  *       '401':
  *         description: Unauthorized
  *         content:

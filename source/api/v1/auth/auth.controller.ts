@@ -134,7 +134,7 @@ export default {
     const userId = req.userId;
     const body = validateSecurity(req, res);
     if (!body) {
-      res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
+      res.status(400).json({ msg: "Неверно заполнена форма" });
       return;
     }
 
