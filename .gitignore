@@ -1,9 +1,5 @@
 /node_modules
 pgdata
-build
-/.husky
-site
-run.sh
 
 /compiled
 
