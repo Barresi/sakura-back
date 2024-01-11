@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcryptjs";
 import { signup as validateSignup } from "./auth.validation";
+import { security as validateSecurity } from "./auth.validation";
 import User from "../../../data/user";
 import {
   generateAccessToken,
@@ -10,7 +11,7 @@ import {
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 
 export default {
-  signup: async function signup(req: Request, res: Response) {
+  signup: async (req: Request, res: Response) => {
     const body = validateSignup(req, res);
     if (!body) {
       res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
@@ -19,8 +20,7 @@ export default {
 
     const existingUser = await User.getUserByEmail(body.email);
     if (existingUser) {
-      res.status(409).json({ msg: "Этот email уже зарегистрирован" });
-      return;
+      return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
     }
 
     const hashedPassword = await hash(body.password, await genSalt());
@@ -29,7 +29,7 @@ export default {
     res.status(200).json({ id: user.id });
   },
 
-  login: async function login(req: Request, res: Response) {
+  login: async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     const user = await User.getUserByEmail(email);
@@ -57,7 +57,7 @@ export default {
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
   },
 
-  token: async function token(req: Request, res: Response) {
+  token: async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
@@ -83,7 +83,7 @@ export default {
     res.status(200).json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   },
 
-  logout: async function logout(req: Request, res: Response) {
+  logout: async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
@@ -99,7 +99,7 @@ export default {
     res.status(200).json({ msg: "Вы успешно вышли из своего аккаунта" });
   },
 
-  userInfo: async function (req: Request, res: Response) {
+  userInfo: async (req: Request, res: Response) => {
     const userId = req.userId;
     const user = await User.getUserById(userId);
     if (!user) {
@@ -107,5 +107,49 @@ export default {
     }
 
     res.status(200).json({ user });
+  },
+  updateAccount: async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const account = req.body;
+
+    if (!account.firstName || !account.lastName) {
+      return res.status(400).json({ msg: "Имя и Фамилия не могут быть пустыми" });
+    }
+
+    const updatedAccount = await User.updateAccount(userId, account);
+
+    const updatedFields = {
+      username: updatedAccount.username,
+      firstName: updatedAccount.firstName,
+      lastName: updatedAccount.lastName,
+      city: updatedAccount.city,
+      birthDate: updatedAccount.birthDate,
+      gender: updatedAccount.gender,
+      description: updatedAccount.description,
+    };
+
+    res.status(200).json({ updatedFields });
+  },
+  updateSecurity: async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const body = validateSecurity(req, res);
+    if (!body) {
+      res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
+      return;
+    }
+
+    if (!body.email || !body.password) {
+      return res.status(400).json({ msg: "Email и пароль не могут быть пустыми" });
+    }
+
+    const existingUser = await User.getUserByEmail(body.email);
+    if (existingUser && existingUser.id !== userId) {
+      return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
+    }
+
+    const hashedPassword = await hash(body.password, await genSalt());
+    const updatedSecurity = await User.updateSecurity(userId, body.email, hashedPassword);
+
+    res.status(200).json({ msg: "Данные успешно обновлены" });
   },
 };

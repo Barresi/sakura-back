@@ -265,6 +265,146 @@ const v1 = Router();
  *               msg: Внутренняя ошибка сервера
  */
 
+/**
+ * @openapi
+ * /api/v1/auth/account:
+ *   patch:
+ *     summary: Update user account details
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               birthDate:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 updatedFields:
+ *                   type: object
+ *                   properties:
+ *                    username:
+ *                      type: string
+ *                    firstName:
+ *                      type: string
+ *                    lastName:
+ *                      type: string
+ *                    city:
+ *                      type: string
+ *                    birthDate:
+ *                      type: string
+ *                    gender:
+ *                      type: string
+ *                    description:
+ *                      type: string
+ *       '400':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Имя и Фамилия не могут быть пустыми
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/security:
+ *   patch:
+ *     summary: Update user security details
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Данные успешно обновлены
+ *       '400':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Неверно заполнена форма регистрации, Email и пароль не могут быть пустыми
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Этот email уже зарегистрирован
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
 v1.use("/auth", auth);
 
 /**
