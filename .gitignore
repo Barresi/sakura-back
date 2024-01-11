@@ -1,6 +1,7 @@
 /node_modules
 pgdata
 /.husky
+/logs
 
 /compiled
 /build

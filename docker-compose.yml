@@ -9,12 +9,9 @@ services:
     env_file: .env
     environment:
       - PORT=${EXPRESS_PORT}
-      - CORS_ORIGIN=${FRONTEND_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
       - DB_URL=${DB_URL}
       - DB_LOGS=${DB_LOGS}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - REDIS_URL=${REDIS_URL}
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
@@ -45,9 +42,9 @@ services:
       - ./redis/dаta:/root/redis
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}localpass
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=16
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_DATABASES=${REDIS_DATABASES}
     command: >
       --requirepass localpass
     ports:
