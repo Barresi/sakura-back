@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: add dir for postgres and redis
+        run: mkdir redis && mkdir postgres    
       - name: rm old .env file
         run: echo > .env
       - name: add new .env file
