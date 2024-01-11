@@ -3,7 +3,7 @@ name: Deploy to Yandex Cloud
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [main, deploy-to-yandex-cloud]
+    branches: [deploy-to-yandex-cloud]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -14,18 +14,33 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "20.10.0"
+      #     cache: "npm"
+
+      # - name: Install dependencies
+      #   run: npm ci
+
+      # - name: Add .env file
+      #   run: rm .env || true && cp .env.example .env
+
+      # - run: docker-compose down
+      # - run: docker-compose —project-name sakura-back up -d —build
+      # - run: npx prisma migrate deploy
+      - name: rm old .env file
+        run: echo > .env
+      - name: add new .env file
+        run: cp .env.example .env
+  # need checkout before using compose-action
+      - uses: actions/checkout@v3
+      - uses: isbang/compose-action@v1.5.1
         with:
-          node-version: "20.10.0"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Add .env file
-        run: rm .env || true && cp .env.example .env
-
-      - run: docker-compose down
-      - run: docker-compose —project-name sakura-back up -d —build
-      - run: npx prisma migrate deploy
+          compose-file: "./docker-compose.yml"
+          up-flags: "--build"
+          services: |
+            sakura-back
+            redis
+            postgres
+        
