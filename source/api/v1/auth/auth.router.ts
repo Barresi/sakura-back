@@ -10,5 +10,7 @@ auth.post("/login", wrap(ctrl.login));
 auth.post("/token", wrap(ctrl.token));
 auth.post("/logout", wrap(ctrl.logout));
 auth.get("/userInfo", guard, wrap(ctrl.userInfo));
+auth.patch("/account", guard, wrap(ctrl.updateAccount));
+auth.patch("/security", guard, wrap(ctrl.updateSecurity));
 
 export default auth;

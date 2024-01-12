@@ -25,6 +25,11 @@ model User {
   email         String          @unique
   password      String
   
+  city          String?
+  birthDate     DateTime?
+  gender        String?
+  description   String?
+  
   role          Role            @default(USER)
   friends       Friend[]        @relation("Friends")
   friended      Friend[]        @relation("Friended")
