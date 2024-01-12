@@ -30,7 +30,7 @@ jobs:
       - name: See docker compose what is working now
         run: docker ps
       - name: add chmod to db dir
-        run: chmod 666 -Rf ./postgres ./redis
+        run: chmod -Rf 666 ./postgres/ ./redis/
   # need checkout before using compose-action
       # - uses: isbang/compose-action@v1.5.1
       #   with:
