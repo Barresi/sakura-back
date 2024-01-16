@@ -1,8 +1,8 @@
+import { RequestStatus } from "@prisma/client";
 import { Request, Response } from "express";
-import User from "../../../data/user";
 import FriendRequest from "../../../data/friend-request";
 import Notification from "../../../data/notification";
-import { RequestStatus } from "@prisma/client";
+import User from "../../../data/user";
 
 export default {
   getAllReceivedRequests: async (req: Request, res: Response) => {
@@ -39,6 +39,7 @@ export default {
     }
 
     const request = await FriendRequest.findRequestById(requestId, userId);
+
     if (!request) {
       return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
