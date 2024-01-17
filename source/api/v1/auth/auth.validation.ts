@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Request, Response } from "express";
 
 // https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
-const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
+const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
 
 export function signup(req: Request, res: Response) {
   const schema = z.object({
