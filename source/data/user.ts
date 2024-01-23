@@ -1,3 +1,4 @@
+import { Gender } from "@prisma/client";
 import Database from "../clients/database";
 
 const db = Database.instance;
@@ -16,7 +17,7 @@ type AccountInput = {
   lastName: string;
   city?: string;
   birthDate?: Date;
-  gender?: string;
+  gender?: Gender;
   description?: string;
 };
 

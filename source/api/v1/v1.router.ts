@@ -320,7 +320,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Имя и Фамилия не могут быть пустыми
+ *               msg: Имя и Фамилия не могут быть пустыми, Некорректное значение пола
  *       '401':
  *         description: Unauthorized
  *         content:

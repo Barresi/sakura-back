@@ -9,6 +9,7 @@ import {
   verifyRefreshToken,
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
+import { Gender } from "@prisma/client";
 
 export default {
   signup: async (req: Request, res: Response) => {
@@ -114,6 +115,12 @@ export default {
 
     if (!account.firstName || !account.lastName) {
       return res.status(400).json({ msg: "Имя и Фамилия не могут быть пустыми" });
+    }
+
+    if (account.gender && !Object.values(Gender).includes(account.gender)) {
+      return res.status(400).json({
+        msg: "Некорректное значение пола",
+      });
     }
 
     const updatedAccount = await User.updateAccount(userId, account);

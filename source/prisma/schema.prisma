@@ -17,6 +17,11 @@ enum RequestStatus {
   ACCEPTED
 }
 
+enum Gender {
+  male
+  female
+}
+
 model User {
   id            String          @id @default(uuid())
   username      String?         @unique
@@ -27,7 +32,7 @@ model User {
   
   city          String?
   birthDate     DateTime?
-  gender        String?
+  gender        Gender?
   description   String?
   
   role          Role            @default(USER)
