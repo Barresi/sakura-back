@@ -34,9 +34,13 @@ export default {
       },
       select: {
         id: true,
+        username: true,
         firstName: true,
         lastName: true,
-        email: true,
+        city: true,
+        birthDate: true,
+        gender: true,
+        description: true,
       },
     });
   },

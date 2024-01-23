@@ -68,9 +68,6 @@ const v1 = Router();
  *                 type: string
  *               password:
  *                 type: string
- *             required:
- *               - email
- *               - password
  *     responses:
  *       '200':
  *         description: OK
@@ -94,10 +91,6 @@ const v1 = Router();
  *                       type: string
  *                     email:
  *                       type: string
- *                 required:
- *                   - accessToken
- *                   - refreshToken
- *                   - userWithoutPassword
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -129,8 +122,6 @@ const v1 = Router();
  *             properties:
  *               refreshToken:
  *                 type: string
- *             required:
- *               - refreshToken
  *     responses:
  *       '200':
  *         description: OK
@@ -143,9 +134,6 @@ const v1 = Router();
  *                   type: string
  *                 refreshToken:
  *                   type: string
- *                 required:
- *                   - accessToken
- *                   - refreshToken
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -183,8 +171,6 @@ const v1 = Router();
  *             properties:
  *               refreshToken:
  *                 type: string
- *             required:
- *               - refreshToken
  *     responses:
  *       '200':
  *         description: OK
@@ -234,11 +220,20 @@ const v1 = Router();
  *                   properties:
  *                     id:
  *                       type: string
- *                     email:
+ *                     username:
  *                       type: string
- *                   required:
- *                     - id
- *                     - email
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     city:
+ *                       type: string
+ *                     birthDate:
+ *                       type: string
+ *                     gender:
+ *                       type: string
+ *                     description:
+ *                       type: string
  *       '401':
  *         description: Unauthorized
  *         content:

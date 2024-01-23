@@ -3,14 +3,11 @@ version: "3.9"
 services:
   postgres:
     image: postgres:15.0
-    environment:
-      POSTGRES_DB: "dev"
-      POSTGRES_USER: "dev"
-      POSTGRES_PASSWORD: "localpass"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
     container_name: "sakura-postgres"
-    volumes:
-      - .:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "sakura"
+      POSTGRES_USER: "sakura"
+      POSTGRES_PASSWORD: "mypassword"
     ports:
       - "5400:5432"
 
@@ -21,9 +18,3 @@ services:
       --requirepass localpass
     ports:
       - "6300:6379"
-
-  adminer:
-    image: adminer
-    container_name: "sakura-adminer"
-    ports:
-      - 8080:8080
