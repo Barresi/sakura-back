@@ -13,12 +13,17 @@ type UserInput = {
 
 type AccountInput = {
   username?: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   city?: string;
   birthDate?: Date;
   gender?: Gender;
   description?: string;
+};
+
+export type SecurityInput = {
+  email?: string;
+  password?: string;
 };
 
 export default {
@@ -62,22 +67,16 @@ export default {
     return db.user.update({
       where: { id: userId },
       data: {
-        username: account.username,
-        firstName: account.firstName,
-        lastName: account.lastName,
-        city: account.city,
-        birthDate: account.birthDate ? new Date(account.birthDate) : undefined,
-        gender: account.gender,
-        description: account.description,
+        ...account,
+        birthDate: account.birthDate ? new Date(account.birthDate) : null,
       },
     });
   },
-  updateSecurity: async (userId: string, email: string, password: string) => {
+  updateSecurity: async (userId: string, securityInput: SecurityInput) => {
     return db.user.update({
       where: { id: userId },
       data: {
-        email,
-        password,
+        ...securityInput,
       },
     });
   },

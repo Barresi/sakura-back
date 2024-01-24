@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcryptjs";
-import { signup as validateSignup } from "./auth.validation";
-import { security as validateSecurity } from "./auth.validation";
-import User from "../../../data/user";
+import { passwordRegex, signup as validateSignup } from "./auth.validation";
+import User, { SecurityInput } from "../../../data/user";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -10,13 +9,13 @@ import {
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { Gender } from "@prisma/client";
+import { z } from "zod";
 
 export default {
   signup: async (req: Request, res: Response) => {
     const body = validateSignup(req, res);
     if (!body) {
-      res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
-      return;
+      return res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
     }
 
     const existingUser = await User.getUserByEmail(body.email);
@@ -113,7 +112,12 @@ export default {
     const userId = req.userId;
     const account = req.body;
 
-    if (!account.firstName || !account.lastName) {
+    if (
+      account.firstName === "" ||
+      account.firstName === null ||
+      account.lastName === "" ||
+      account.lastName === null
+    ) {
       return res.status(400).json({ msg: "Имя и Фамилия не могут быть пустыми" });
     }
 
@@ -139,24 +143,36 @@ export default {
   },
   updateSecurity: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const body = validateSecurity(req, res);
-    if (!body) {
+    const securityInput: SecurityInput = req.body;
+
+    if (!securityInput.email && !securityInput.password) {
+      return res
+        .status(400)
+        .json({ msg: "Email и/или пароль должны быть предоставлены" });
+    }
+
+    try {
+      const { email, password } = securityInput;
+      const validatedSecurityInput = {
+        email: email !== undefined ? z.string().email().trim().parse(email) : undefined,
+        password:
+          password !== undefined
+            ? z.string().regex(passwordRegex).trim().parse(password)
+            : undefined,
+      };
+
+      if (validatedSecurityInput.password) {
+        validatedSecurityInput.password = await hash(
+          validatedSecurityInput.password,
+          await genSalt()
+        );
+      }
+
+      const updatedUser = await User.updateSecurity(userId, validatedSecurityInput);
+
+      res.status(200).json({ email: updatedUser.email });
+    } catch (error: unknown) {
       res.status(400).json({ msg: "Неверно заполнена форма" });
-      return;
     }
-
-    if (!body.email || !body.password) {
-      return res.status(400).json({ msg: "Email и пароль не могут быть пустыми" });
-    }
-
-    const existingUser = await User.getUserByEmail(body.email);
-    if (existingUser && existingUser.id !== userId) {
-      return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
-    }
-
-    const hashedPassword = await hash(body.password, await genSalt());
-    const updatedSecurity = await User.updateSecurity(userId, body.email, hashedPassword);
-
-    res.status(200).json({ msg: "Данные успешно обновлены" });
   },
 };
