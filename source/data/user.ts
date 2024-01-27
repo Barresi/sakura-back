@@ -43,6 +43,7 @@ export default {
         username: true,
         firstName: true,
         lastName: true,
+        email: true,
         city: true,
         birthDate: true,
         gender: true,
