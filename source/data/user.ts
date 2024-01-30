@@ -33,10 +33,14 @@ export default {
   getUserByEmail: async (email: string) => {
     return db.user.findUnique({ where: { email } });
   },
+  checkUsername: async (username: string) => {
+    return db.user.findUnique({ where: { username } });
+  },
   getUserById: async (userId: string) => {
     return db.user.findUnique({
       where: {
         id: userId,
+        deleted: null,
       },
       select: {
         id: true,
@@ -53,6 +57,7 @@ export default {
   },
   getAllUsers: async () => {
     return db.user.findMany({
+      where: { deleted: null },
       select: {
         id: true,
         username: true,
@@ -66,7 +71,7 @@ export default {
   },
   updateAccount: async (userId: string, account: AccountInput) => {
     return db.user.update({
-      where: { id: userId },
+      where: { id: userId, deleted: null },
       data: {
         ...account,
         birthDate: account.birthDate ? new Date(account.birthDate) : null,
@@ -75,9 +80,17 @@ export default {
   },
   updateSecurity: async (userId: string, securityInput: SecurityInput) => {
     return db.user.update({
-      where: { id: userId },
+      where: { id: userId, deleted: null },
       data: {
         ...securityInput,
+      },
+    });
+  },
+  deleteUser: async (userId: string) => {
+    return db.user.update({
+      where: { id: userId, deleted: null },
+      data: {
+        deleted: new Date(),
       },
     });
   },

@@ -19,11 +19,6 @@ export default {
         .json({ msg: "Вы не можете отправить заявку в друзья самому себе" });
     }
 
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
-
     const friend = await User.getUserById(friendId);
     if (!friend) {
       return res.status(404).json({ msg: "Пользователь не найден" });

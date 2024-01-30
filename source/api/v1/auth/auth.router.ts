@@ -12,5 +12,6 @@ auth.post("/logout", wrap(ctrl.logout));
 auth.get("/userInfo", guard, wrap(ctrl.userInfo));
 auth.patch("/account", guard, wrap(ctrl.updateAccount));
 auth.patch("/security", guard, wrap(ctrl.updateSecurity));
+auth.delete("/delete", guard, wrap(ctrl.deleteAccount));
 
 export default auth;

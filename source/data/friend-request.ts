@@ -4,7 +4,7 @@ import Database from "../clients/database";
 const db = Database.instance;
 
 export default {
-  findFriendId: async (requestId: string, userId: string) => {
+  findFriendByRequestId: async (requestId: string, userId: string) => {
     const friendRequest = await db.friend.findUnique({
       where: {
         id: requestId,
@@ -19,7 +19,14 @@ export default {
     const friendId =
       friendRequest.fromId === userId ? friendRequest.toId : friendRequest.fromId;
 
-    return friendId;
+    const friend = await db.user.findUnique({
+      where: {
+        id: friendId,
+        deleted: null,
+      },
+    });
+
+    return friend;
   },
   findRequestById: async (requestId: string, userId: string) => {
     return db.friend.findUnique({

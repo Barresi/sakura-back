@@ -85,11 +85,21 @@ const v1 = Router();
  *                   properties:
  *                     id:
  *                       type: string
+ *                     username:
+ *                       type: string
  *                     firstName:
  *                       type: string
  *                     lastName:
  *                       type: string
  *                     email:
+ *                       type: string
+ *                     city:
+ *                       type: string
+ *                     birthDate:
+ *                       type: string
+ *                     gender:
+ *                       type: string
+ *                     description:
  *                       type: string
  *       '401':
  *         description: Unauthorized
@@ -320,7 +330,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Имя и Фамилия не могут быть пустыми, Некорректное значение пола
+ *               msg: Имя и Фамилия не могут быть пустыми, Некорректное значение пола, Некоторые данные для обновления профиля должны быть предоставлены
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -333,6 +343,12 @@ const v1 = Router();
  *           application/json:
  *             example:
  *               msg: Access token устарел
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Этот username уже занят
  *       '500':
  *         description: Internal server error
  *         content:
@@ -367,7 +383,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Данные успешно обновлены
+ *               email: string
  *       '400':
  *         description: Not found
  *         content:
@@ -392,6 +408,48 @@ const v1 = Router();
  *           application/json:
  *             example:
  *               msg: Этот email уже зарегистрирован
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/delete:
+ *   delete:
+ *     summary: Delete user acoount
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Профиль успешно удален
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -432,12 +490,6 @@ v1.use("/auth", auth);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -533,12 +585,6 @@ v1.use("/users", users);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -645,12 +691,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -700,12 +740,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -760,7 +794,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
+ *               msg: Пользователь не найден, Заявка в друзья не найдена
  *       '500':
  *         description: Internal server error
  *         content:
@@ -809,7 +843,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
+ *               msg: Пользователь не найден, Заявка в друзья не найдена
  *       '500':
  *         description: Internal server error
  *         content:

@@ -49,9 +49,14 @@ export default {
 
     const userWithoutPassword = {
       id: user.id,
+      username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      city: user.city,
+      birthDate: user.birthDate,
+      gender: user.gender,
+      description: user.description,
     };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
@@ -102,15 +107,28 @@ export default {
   userInfo: async (req: Request, res: Response) => {
     const userId = req.userId;
     const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
 
     res.status(200).json({ user });
   },
   updateAccount: async (req: Request, res: Response) => {
     const userId = req.userId;
     const account = req.body;
+
+    if (
+      !account.username &&
+      !account.firstName &&
+      !account.lastName &&
+      !account.city &&
+      !account.birthDate &&
+      !account.gender &&
+      !account.description
+    ) {
+      return res
+        .status(400)
+        .json({
+          msg: "Некоторые данные для обновления профиля должны быть предоставлены",
+        });
+    }
 
     if (
       account.firstName === "" ||
@@ -125,6 +143,11 @@ export default {
       return res.status(400).json({
         msg: "Некорректное значение пола",
       });
+    }
+
+    const existingUsername = await User.checkUsername(account.username);
+    if (existingUsername) {
+      return res.status(409).json({ msg: "Этот username уже занят" });
     }
 
     const updatedAccount = await User.updateAccount(userId, account);
@@ -153,6 +176,7 @@ export default {
 
     try {
       const { email, password } = securityInput;
+
       const validatedSecurityInput = {
         email: email !== undefined ? z.string().email().trim().parse(email) : undefined,
         password:
@@ -160,6 +184,13 @@ export default {
             ? z.string().regex(passwordRegex).trim().parse(password)
             : undefined,
       };
+
+      if (validatedSecurityInput.email) {
+        const existingUser = await User.getUserByEmail(validatedSecurityInput.email);
+        if (existingUser) {
+          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
+        }
+      }
 
       if (validatedSecurityInput.password) {
         validatedSecurityInput.password = await hash(
@@ -174,5 +205,12 @@ export default {
     } catch (error: unknown) {
       res.status(400).json({ msg: "Неверно заполнена форма" });
     }
+  },
+  deleteAccount: async (req: Request, res: Response) => {
+    const userId = req.userId;
+
+    await User.deleteUser(userId);
+
+    res.status(200).json({ msg: "Профиль успешно удален" });
   },
 };
