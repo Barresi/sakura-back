@@ -123,11 +123,9 @@ export default {
       !account.gender &&
       !account.description
     ) {
-      return res
-        .status(400)
-        .json({
-          msg: "Некоторые данные для обновления профиля должны быть предоставлены",
-        });
+      return res.status(400).json({
+        msg: "Некоторые данные для обновления профиля должны быть предоставлены",
+      });
     }
 
     if (
@@ -145,9 +143,11 @@ export default {
       });
     }
 
-    const existingUsername = await User.checkUsername(account.username);
-    if (existingUsername) {
-      return res.status(409).json({ msg: "Этот username уже занят" });
+    if (account.username) {
+      const existingUsername = await User.checkUsername(account.username);
+      if (existingUsername) {
+        return res.status(409).json({ msg: "Этот username уже занят" });
+      }
     }
 
     const updatedAccount = await User.updateAccount(userId, account);
