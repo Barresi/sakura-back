@@ -21,11 +21,6 @@ type AccountInput = {
   description?: string;
 };
 
-export type SecurityInput = {
-  email?: string;
-  password?: string;
-};
-
 export default {
   createUser: async (user: UserInput) => {
     return db.user.create({ data: user });
@@ -33,25 +28,17 @@ export default {
   getUserByEmail: async (email: string) => {
     return db.user.findUnique({ where: { email } });
   },
-  checkUsername: async (username: string) => {
-    return db.user.findUnique({ where: { username } });
+  checkEmail: async (email: string, userId: string) => {
+    return db.user.findUnique({ where: { email, NOT: { id: userId } } });
+  },
+  checkUsername: async (username: string, userId: string) => {
+    return db.user.findUnique({ where: { username, NOT: { id: userId } } });
   },
   getUserById: async (userId: string) => {
     return db.user.findUnique({
       where: {
         id: userId,
         deleted: null,
-      },
-      select: {
-        id: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        city: true,
-        birthDate: true,
-        gender: true,
-        description: true,
       },
     });
   },
@@ -75,14 +62,16 @@ export default {
       data: {
         ...account,
         birthDate: account.birthDate ? new Date(account.birthDate) : null,
+        gender: account.gender ? account.gender : null,
       },
     });
   },
-  updateSecurity: async (userId: string, securityInput: SecurityInput) => {
+  updateSecurity: async (userId: string, email?: string, password?: string) => {
     return db.user.update({
       where: { id: userId, deleted: null },
       data: {
-        ...securityInput,
+        email,
+        password,
       },
     });
   },

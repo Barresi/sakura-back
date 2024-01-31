@@ -326,7 +326,7 @@ const v1 = Router();
  *                    description:
  *                      type: string
  *       '400':
- *         description: Not found
+ *         description: Bad request
  *         content:
  *           application/json:
  *             example:
@@ -377,6 +377,8 @@ const v1 = Router();
  *                 type: string
  *               password:
  *                 type: string
+ *               confirmPassword:
+ *                 type: string
  *     responses:
  *       '200':
  *         description: OK
@@ -385,7 +387,7 @@ const v1 = Router();
  *             example:
  *               email: string
  *       '400':
- *         description: Not found
+ *         description: Bad request
  *         content:
  *           application/json:
  *             example:
@@ -395,13 +397,19 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token не предоставлен
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения
  *       '403':
  *         description: Forbidden
  *         content:
  *           application/json:
  *             example:
  *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
  *       '409':
  *         description: Conflict
  *         content:
@@ -425,6 +433,15 @@ const v1 = Router();
  *       - Authentication
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               confirmPassword:
+ *                 type: string
  *     responses:
  *       '200':
  *         description: OK
@@ -432,12 +449,18 @@ const v1 = Router();
  *           application/json:
  *             example:
  *               msg: Профиль успешно удален
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пароль подтверждения не предоставлен
  *       '401':
  *         description: Unauthorized
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token не предоставлен
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения
  *       '403':
  *         description: Forbidden
  *         content:

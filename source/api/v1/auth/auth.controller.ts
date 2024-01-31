@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcryptjs";
 import { passwordRegex, signup as validateSignup } from "./auth.validation";
-import User, { SecurityInput } from "../../../data/user";
+import User from "../../../data/user";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -106,7 +106,22 @@ export default {
 
   userInfo: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const user = await User.getUserById(userId);
+    const userInfo = await User.getUserById(userId);
+    if (!userInfo) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
+    }
+
+    const user = {
+      id: userInfo.id,
+      username: userInfo.username,
+      firstName: userInfo.firstName,
+      lastName: userInfo.lastName,
+      email: userInfo.email,
+      city: userInfo.city,
+      birthDate: userInfo.birthDate,
+      gender: userInfo.gender,
+      description: userInfo.description,
+    };
 
     res.status(200).json({ user });
   },
@@ -144,7 +159,7 @@ export default {
     }
 
     if (account.username) {
-      const existingUsername = await User.checkUsername(account.username);
+      const existingUsername = await User.checkUsername(account.username, userId);
       if (existingUsername) {
         return res.status(409).json({ msg: "Этот username уже занят" });
       }
@@ -166,17 +181,15 @@ export default {
   },
   updateSecurity: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const securityInput: SecurityInput = req.body;
+    const { email, password, confirmPassword } = req.body;
 
-    if (!securityInput.email && !securityInput.password) {
+    if (!email && !password) {
       return res
         .status(400)
         .json({ msg: "Email и/или пароль должны быть предоставлены" });
     }
 
     try {
-      const { email, password } = securityInput;
-
       const validatedSecurityInput = {
         email: email !== undefined ? z.string().email().trim().parse(email) : undefined,
         password:
@@ -185,21 +198,35 @@ export default {
             : undefined,
       };
 
-      if (validatedSecurityInput.email) {
-        const existingUser = await User.getUserByEmail(validatedSecurityInput.email);
+      if (validatedSecurityInput.email && confirmPassword !== undefined) {
+        const existingUser = await User.checkEmail(validatedSecurityInput.email, userId);
         if (existingUser) {
           return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
         }
       }
 
-      if (validatedSecurityInput.password) {
+      if (validatedSecurityInput.password && confirmPassword !== undefined) {
         validatedSecurityInput.password = await hash(
           validatedSecurityInput.password,
           await genSalt()
         );
       }
 
-      const updatedUser = await User.updateSecurity(userId, validatedSecurityInput);
+      const user = await User.getUserById(userId);
+      if (!user) {
+        return res.status(401).json({ msg: "Пользователь не найден" });
+      }
+
+      const passwordMatch = await compare(confirmPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+      }
+
+      const updatedUser = await User.updateSecurity(
+        userId,
+        validatedSecurityInput.email,
+        validatedSecurityInput.password
+      );
 
       res.status(200).json({ email: updatedUser.email });
     } catch (error: unknown) {
@@ -208,6 +235,20 @@ export default {
   },
   deleteAccount: async (req: Request, res: Response) => {
     const userId = req.userId;
+    const { confirmPassword } = req.body;
+    if (!confirmPassword) {
+      return res.status(400).json({ msg: "Пароль подтверждения не предоставлен" });
+    }
+
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
+    }
+
+    const passwordMatch = await compare(confirmPassword, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+    }
 
     await User.deleteUser(userId);
 
