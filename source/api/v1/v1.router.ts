@@ -391,7 +391,7 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token не предоставлен, Неверный пароль подтверждения, Пароли не совпадают
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения
  *       '403':
  *         description: Forbidden
  *         content:

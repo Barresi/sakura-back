@@ -167,7 +167,7 @@ export default {
         return res.status(404).json({ msg: "Пользователь не найден" });
       }
 
-      if (validatedSecurityInput.email && validatedSecurityInput.password) {
+      if (validatedSecurityInput.email) {
         const emailAlreadyRegistered = await User.checkEmail(
           validatedSecurityInput.email,
           userId
@@ -175,41 +175,18 @@ export default {
         if (emailAlreadyRegistered) {
           return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
         }
+      }
 
-        if (validatedSecurityInput.password !== confirmPassword) {
-          return res.status(401).json({ msg: "Пароли не совпадают" });
-        }
-
+      if (validatedSecurityInput.password) {
         validatedSecurityInput.password = await hash(
           validatedSecurityInput.password,
           await genSalt()
         );
       }
 
-      if (validatedSecurityInput.email && validatedSecurityInput.password === undefined) {
-        const emailAlreadyRegistered = await User.checkEmail(
-          validatedSecurityInput.email,
-          userId
-        );
-        if (emailAlreadyRegistered) {
-          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
-        }
-
-        const passwordMatch = await compare(confirmPassword, user.password);
-        if (!passwordMatch) {
-          return res.status(401).json({ msg: "Неверный пароль подтверждения" });
-        }
-      }
-
-      if (validatedSecurityInput.password && validatedSecurityInput.email === undefined) {
-        if (validatedSecurityInput.password !== confirmPassword) {
-          return res.status(401).json({ msg: "Пароли не совпадают" });
-        }
-
-        validatedSecurityInput.password = await hash(
-          validatedSecurityInput.password,
-          await genSalt()
-        );
+      const passwordMatch = await compare(confirmPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ msg: "Неверный пароль подтверждения" });
       }
 
       const updatedUser = await User.updateSecurity(
