@@ -26,6 +26,9 @@ export default {
     return db.user.create({ data: user });
   },
   getUserByEmail: async (email: string) => {
+    return db.user.findUnique({ where: { email, deleted: null } });
+  },
+  emailAlreadyRegistered: async (email: string) => {
     return db.user.findUnique({ where: { email } });
   },
   checkEmail: async (email: string, userId: string) => {
@@ -61,8 +64,7 @@ export default {
       where: { id: userId, deleted: null },
       data: {
         ...account,
-        birthDate: account.birthDate ? new Date(account.birthDate) : null,
-        gender: account.gender ? account.gender : null,
+        birthDate: account.birthDate ? new Date(account.birthDate) : undefined,
       },
     });
   },

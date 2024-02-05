@@ -325,12 +325,6 @@ const v1 = Router();
  *                      type: string
  *                    description:
  *                      type: string
- *       '400':
- *         description: Bad request
- *         content:
- *           application/json:
- *             example:
- *               msg: Имя и Фамилия не могут быть пустыми, Некорректное значение пола, Некоторые данные для обновления профиля должны быть предоставлены
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -391,13 +385,13 @@ const v1 = Router();
  *         content:
  *           application/json:
  *             example:
- *               msg: Неверно заполнена форма, Email и/или пароль должны быть предоставлены
+ *               msg: Неверно заполнена форма
  *       '401':
  *         description: Unauthorized
  *         content:
  *           application/json:
  *             example:
- *               msg: Access token не предоставлен, Неверный пароль подтверждения
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения, Пароли не совпадают
  *       '403':
  *         description: Forbidden
  *         content:

@@ -8,7 +8,6 @@ import {
   verifyRefreshToken,
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
-import { Gender } from "@prisma/client";
 import { z } from "zod";
 
 export default {
@@ -18,7 +17,7 @@ export default {
       return res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
     }
 
-    const existingUser = await User.getUserByEmail(body.email);
+    const existingUser = await User.emailAlreadyRegistered(body.email);
     if (existingUser) {
       return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
     }
@@ -129,35 +128,6 @@ export default {
     const userId = req.userId;
     const account = req.body;
 
-    if (
-      !account.username &&
-      !account.firstName &&
-      !account.lastName &&
-      !account.city &&
-      !account.birthDate &&
-      !account.gender &&
-      !account.description
-    ) {
-      return res.status(400).json({
-        msg: "Некоторые данные для обновления профиля должны быть предоставлены",
-      });
-    }
-
-    if (
-      account.firstName === "" ||
-      account.firstName === null ||
-      account.lastName === "" ||
-      account.lastName === null
-    ) {
-      return res.status(400).json({ msg: "Имя и Фамилия не могут быть пустыми" });
-    }
-
-    if (account.gender && !Object.values(Gender).includes(account.gender)) {
-      return res.status(400).json({
-        msg: "Некорректное значение пола",
-      });
-    }
-
     if (account.username) {
       const existingUsername = await User.checkUsername(account.username, userId);
       if (existingUsername) {
@@ -183,12 +153,6 @@ export default {
     const userId = req.userId;
     const { email, password, confirmPassword } = req.body;
 
-    if (!email && !password) {
-      return res
-        .status(400)
-        .json({ msg: "Email и/или пароль должны быть предоставлены" });
-    }
-
     try {
       const validatedSecurityInput = {
         email: email !== undefined ? z.string().email().trim().parse(email) : undefined,
@@ -198,28 +162,54 @@ export default {
             : undefined,
       };
 
-      if (validatedSecurityInput.email && confirmPassword !== undefined) {
-        const existingUser = await User.checkEmail(validatedSecurityInput.email, userId);
-        if (existingUser) {
-          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
-        }
+      const user = await User.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ msg: "Пользователь не найден" });
       }
 
-      if (validatedSecurityInput.password && confirmPassword !== undefined) {
+      if (validatedSecurityInput.email && validatedSecurityInput.password) {
+        const emailAlreadyRegistered = await User.checkEmail(
+          validatedSecurityInput.email,
+          userId
+        );
+        if (emailAlreadyRegistered) {
+          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
+        }
+
+        if (validatedSecurityInput.password !== confirmPassword) {
+          return res.status(401).json({ msg: "Пароли не совпадают" });
+        }
+
         validatedSecurityInput.password = await hash(
           validatedSecurityInput.password,
           await genSalt()
         );
       }
 
-      const user = await User.getUserById(userId);
-      if (!user) {
-        return res.status(401).json({ msg: "Пользователь не найден" });
+      if (validatedSecurityInput.email && validatedSecurityInput.password === undefined) {
+        const emailAlreadyRegistered = await User.checkEmail(
+          validatedSecurityInput.email,
+          userId
+        );
+        if (emailAlreadyRegistered) {
+          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
+        }
+
+        const passwordMatch = await compare(confirmPassword, user.password);
+        if (!passwordMatch) {
+          return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+        }
       }
 
-      const passwordMatch = await compare(confirmPassword, user.password);
-      if (!passwordMatch) {
-        return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+      if (validatedSecurityInput.password && validatedSecurityInput.email === undefined) {
+        if (validatedSecurityInput.password !== confirmPassword) {
+          return res.status(401).json({ msg: "Пароли не совпадают" });
+        }
+
+        validatedSecurityInput.password = await hash(
+          validatedSecurityInput.password,
+          await genSalt()
+        );
       }
 
       const updatedUser = await User.updateSecurity(
@@ -248,6 +238,11 @@ export default {
     const passwordMatch = await compare(confirmPassword, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+    }
+
+    const storedRefreshToken = await getRefreshToken(userId);
+    if (storedRefreshToken) {
+      await deleteRefreshToken(userId, storedRefreshToken);
     }
 
     await User.deleteUser(userId);
