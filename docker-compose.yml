@@ -43,7 +43,7 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DATABASES=${REDIS_DATABASES}
     volumes:
-      - ./redis/dаta:/root/redis
+      - ./redis/data:/root/redis
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: >
       --requirepass localpass
