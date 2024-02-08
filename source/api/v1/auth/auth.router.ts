@@ -16,6 +16,10 @@ auth.get("/userInfo", guard, (req, res) => {
   logger.info("------Received GET request to /userInfo------");
   res.status(200).json({ msg: "Received GET request to /userInfo" });
 });
+auth.post("test", (req, res) => {
+  logger.info("------Received POST request to /auth/test------");
+  res.status(200).json({ msg: "Received POST request to /auth/test" });
+});
 
 // auth.patch("/account", guard, wrap(ctrl.updateAccount));
 auth.post("/account", guard, (req, res) => {
