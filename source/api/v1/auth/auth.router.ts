@@ -9,7 +9,11 @@ auth.post("/signup", wrap(ctrl.signup));
 auth.post("/login", wrap(ctrl.login));
 auth.post("/token", wrap(ctrl.token));
 auth.post("/logout", wrap(ctrl.logout));
-auth.get("/userInfo", guard, wrap(ctrl.userInfo));
+// auth.get("/userInfo", guard, wrap(ctrl.userInfo));
+auth.get("/userInfo", guard, (req, res) => {
+  console.log("Received GET request to /userInfo");
+});
+
 // auth.patch("/account", guard, wrap(ctrl.updateAccount));
 auth.patch("/account", guard, (req, res) => {
   console.log("Received PATCH request to /account");
