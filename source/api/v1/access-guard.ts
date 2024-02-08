@@ -1,10 +1,14 @@
 import { verifyAccessToken } from "../../jwt";
 import { Request, Response, NextFunction } from "express";
 import User from "../../data/user";
+import Logger from "../../clients/logger";
+
+const logger = Logger.instance;
 
 export default async function (req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
-  console.log("Authorization header:", authHeader);
+  logger.info(`------Received token: ${authHeader}------`);
+
   const accessToken = authHeader && authHeader.split(" ")[1];
 
   if (!accessToken) {
