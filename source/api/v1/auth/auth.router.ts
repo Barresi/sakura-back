@@ -18,7 +18,7 @@ auth.get("/userInfo", guard, (req, res) => {
 });
 
 // auth.patch("/account", guard, wrap(ctrl.updateAccount));
-auth.patch("/account", guard, (req, res) => {
+auth.post("/account", guard, (req, res) => {
   logger.info("------Received PATCH request to /account------");
   res.status(200).json({ msg: "Received PATCH request to /account" });
 });
