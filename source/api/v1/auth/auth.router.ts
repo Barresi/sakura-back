@@ -10,7 +10,11 @@ auth.post("/login", wrap(ctrl.login));
 auth.post("/token", wrap(ctrl.token));
 auth.post("/logout", wrap(ctrl.logout));
 auth.get("/userInfo", guard, wrap(ctrl.userInfo));
-auth.patch("/account", guard, wrap(ctrl.updateAccount));
+// auth.patch("/account", guard, wrap(ctrl.updateAccount));
+auth.patch("/account", guard, (req, res) => {
+  console.log("Received PATCH request to /account");
+});
+
 auth.patch("/security", guard, wrap(ctrl.updateSecurity));
 auth.delete("/delete", guard, wrap(ctrl.deleteAccount));
 

@@ -4,6 +4,7 @@ import User from "../../data/user";
 
 export default async function (req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
+  console.log("Authorization header:", authHeader);
   const accessToken = authHeader && authHeader.split(" ")[1];
 
   if (!accessToken) {
