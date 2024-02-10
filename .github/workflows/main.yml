@@ -17,12 +17,12 @@ jobs:
         options: --privileged
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # - name: Delete repo
-      #   run: rm -Rf ./* 
-      - name: git pull
-        run: git pull
-      # - name: add dir for postgres and redis
-      #   run: mkdir -p redis/data && mkdir -p postgres/data
+      - name: Delete repo
+        run: rm -Rf ./* 
+      - name: git clone
+        run: git clone https://github.com/Barresi/sakura-back.git
+      - name: git checkout
+        run: git checkout feature/settings-prod
       - name: rm old .env file
         run: echo > .env
       - name: add new .env file
