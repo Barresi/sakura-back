@@ -11,10 +11,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: self-hosted
-    services:
-      docker:
-        image: docker:20.10.11
-        options: --privileged
+    # services:
+      # docker:
+      #   image: docker:20.10.11
+      #   options: --privileged
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:	
       - name: Delete repo
