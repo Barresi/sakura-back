@@ -16,11 +16,13 @@ jobs:
         image: docker:20.10.11
         options: --privileged
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
+    steps:	
       - name: Delete repo
         run: rm -Rf ./* 
       - name: git clone
         run: git clone https://github.com/Barresi/sakura-back.git
+      - name: git clone
+        run: git config --global --add safe.directory /opt/actions-runner-back/_work/sakura-back/sakura-back
       - name: git checkout
         run: git checkout feature/settings-prod
       - name: rm old .env file
