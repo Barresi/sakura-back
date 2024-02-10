@@ -17,8 +17,10 @@ jobs:
         options: --privileged
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Delete repo
+      #   run: rm -Rf ./* 
+      - name: git pull
+        run: git pull
       # - name: add dir for postgres and redis
       #   run: mkdir -p redis/data && mkdir -p postgres/data
       - name: rm old .env file
