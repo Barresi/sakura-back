@@ -10,6 +10,10 @@ import {
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { z } from "zod";
 
+function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export default {
   signup: async (req: Request, res: Response) => {
     const body = validateSignup(req, res);
@@ -17,13 +21,21 @@ export default {
       return res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
     }
 
+    const capitalizedFirstName = capitalizeFirstLetter(body.firstName);
+    const capitalizedLastName = capitalizeFirstLetter(body.lastName);
+
     const existingUser = await User.emailAlreadyRegistered(body.email);
     if (existingUser) {
       return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
     }
 
     const hashedPassword = await hash(body.password, await genSalt());
-    const user = await User.createUser({ ...body, password: hashedPassword });
+    const user = await User.createUser({
+      ...body,
+      firstName: capitalizedFirstName,
+      lastName: capitalizedLastName,
+      password: hashedPassword,
+    });
 
     res.status(200).json({ id: user.id });
   },
@@ -133,6 +145,12 @@ export default {
       if (existingUsername) {
         return res.status(409).json({ msg: "Этот username уже занят" });
       }
+    }
+    if (account.firstName) {
+      account.firstName = capitalizeFirstLetter(account.firstName);
+    }
+    if (account.lastName) {
+      account.lastName = capitalizeFirstLetter(account.lastName);
     }
 
     const updatedAccount = await User.updateAccount(userId, account);
