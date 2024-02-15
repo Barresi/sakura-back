@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: .env
+    env_file: .env.example
     environment:
       - PORT=${EXPRESS_PORT}
       - CORS_ORIGIN=${CORS_ORIGIN}
@@ -43,7 +43,7 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DATABASES=${REDIS_DATABASES}
     volumes:
-      - ./redis/data:/usr/local/etc/redis
+      - ./redis/data:/data/
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: >
       --requirepass localpass
