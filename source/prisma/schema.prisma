@@ -41,6 +41,7 @@ model User {
   chats         Chat[]          @relation("Participants")
   messages      Message[]       @relation("Sender")
   notifications Notification[]  @relation("Recipients")
+  createdChat   Chat[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -65,6 +66,9 @@ model Chat {
   id            String          @id @default(uuid())
   participants  User[]          @relation("Participants")
   messages      Message[]       @relation("Messages")
+  createdById   String?
+
+  createdByUser User?           @relation(fields: [createdById], references: [id])
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
