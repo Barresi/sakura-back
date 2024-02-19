@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: .env.example
+    env_file: .env
     environment:
       - PORT=${EXPRESS_PORT}
       - CORS_ORIGIN=${CORS_ORIGIN}
