@@ -13,6 +13,7 @@ export default {
   getUserNotifications: async (userId: string) => {
     return db.notification.findMany({
       where: {
+        read: false,
         recipients: {
           some: {
             id: userId,
@@ -20,6 +21,20 @@ export default {
         },
       },
     });
+  },
+  markNotificationsAsRead: async (notificationIds: string[]) => {
+    const updatedNotifications = await db.notification.updateMany({
+      where: {
+        id: {
+          in: notificationIds,
+        },
+      },
+      data: {
+        read: true,
+      },
+    });
+
+    return updatedNotifications;
   },
   sendFriendRequestNtf: async (userId: string, friendId: string, io: Server) => {
     const content = `${userId} подал заявку в друзья`;

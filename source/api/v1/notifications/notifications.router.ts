@@ -6,5 +6,6 @@ import guard from "../access-guard";
 const notifications = Router();
 
 notifications.get("/", guard, wrap(ctrl.getNotifications));
+notifications.patch("/", guard, wrap(ctrl.updateNotificationsStatus));
 
 export default notifications;
