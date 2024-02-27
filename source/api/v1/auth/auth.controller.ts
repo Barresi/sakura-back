@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcryptjs";
-import { passwordRegex, signup as validateSignup } from "./auth.validation";
+import {
+  validateSignup,
+  emailRegex,
+  passwordRegex,
+  usernameRegex,
+  nameRegex,
+} from "./auth.validation";
 import User from "../../../data/user";
 import {
   generateAccessToken,
@@ -21,9 +27,6 @@ export default {
       return res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
     }
 
-    const capitalizedFirstName = capitalizeFirstLetter(body.firstName);
-    const capitalizedLastName = capitalizeFirstLetter(body.lastName);
-
     const existingUser = await User.emailAlreadyRegistered(body.email);
     if (existingUser) {
       return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
@@ -32,8 +35,8 @@ export default {
     const hashedPassword = await hash(body.password, await genSalt());
     const user = await User.createUser({
       ...body,
-      firstName: capitalizedFirstName,
-      lastName: capitalizedLastName,
+      firstName: capitalizeFirstLetter(body.firstName),
+      lastName: capitalizeFirstLetter(body.lastName),
       password: hashedPassword,
     });
 
@@ -141,16 +144,35 @@ export default {
     const account = req.body;
 
     if (account.username) {
+      account.username = z
+        .string()
+        .trim()
+        .regex(usernameRegex)
+        .min(5)
+        .max(20)
+        .parse(account.username);
       const existingUsername = await User.checkUsername(account.username, userId);
       if (existingUsername) {
         return res.status(409).json({ msg: "Этот username уже занят" });
       }
     }
     if (account.firstName) {
-      account.firstName = capitalizeFirstLetter(account.firstName);
+      account.firstName = z
+        .string()
+        .trim()
+        .regex(nameRegex)
+        .min(2)
+        .max(20)
+        .parse(capitalizeFirstLetter(account.firstName));
     }
     if (account.lastName) {
-      account.lastName = capitalizeFirstLetter(account.lastName);
+      account.lastName = z
+        .string()
+        .trim()
+        .regex(nameRegex)
+        .min(2)
+        .max(20)
+        .parse(capitalizeFirstLetter(account.lastName));
     }
 
     const updatedAccount = await User.updateAccount(userId, account);
@@ -173,10 +195,13 @@ export default {
 
     try {
       const validatedSecurityInput = {
-        email: email !== undefined ? z.string().email().trim().parse(email) : undefined,
+        email:
+          email !== undefined
+            ? z.string().trim().regex(emailRegex).parse(email)
+            : undefined,
         password:
           password !== undefined
-            ? z.string().regex(passwordRegex).trim().parse(password)
+            ? z.string().trim().regex(passwordRegex).min(8).max(20).parse(password)
             : undefined,
       };
 

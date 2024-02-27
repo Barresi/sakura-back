@@ -1,16 +1,18 @@
 import { z } from "zod";
 import { Request, Response } from "express";
 
-// https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
-export const passwordRegex = /^[a-zA-Z!@#-$%^&*\d]+$/;
+export const usernameRegex = /^@[a-zA-Z0-9_-]+$/;
+export const nameRegex = /^[а-яА-Яa-zA-Z]+$/u;
+export const emailRegex = /^(?=.{1,256}$)[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+export const passwordRegex = /^[a-zA-Z!@#-_=+$%()/.,`^&*\d]+$/;
 
-export function signup(req: Request, res: Response) {
+export function validateSignup(req: Request, res: Response) {
   const schema = z.object({
-    username: z.string().optional(),
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email().trim(),
-    password: z.string().regex(passwordRegex).trim(),
+    username: z.string().trim().regex(usernameRegex).min(5).max(20).optional(),
+    firstName: z.string().trim().regex(nameRegex).min(2).max(20),
+    lastName: z.string().trim().regex(nameRegex).min(2).max(20),
+    email: z.string().trim().regex(emailRegex),
+    password: z.string().trim().regex(passwordRegex).min(8).max(20),
   });
 
   try {

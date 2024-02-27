@@ -325,6 +325,12 @@ const v1 = Router();
  *                      type: string
  *                    description:
  *                      type: string
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Некорректные данные
  *       '401':
  *         description: Unauthorized
  *         content:
