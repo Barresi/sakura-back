@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: .env.example
+    env_file: .env
     environment:
       - PORT=${EXPRESS_PORT}
       - CORS_ORIGIN=${CORS_ORIGIN}
@@ -16,7 +16,7 @@ services:
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
     volumes:
-      - /opt/test/sakura-back:/app
+      - /opt/actions-runner-back/_work/sakura-back/sakura-back:/app
     command: bash -c "npm install && npx prisma generate && npm run build && npx prisma migrate deploy && npm run start"
     ports:
       - "5000:5000"
