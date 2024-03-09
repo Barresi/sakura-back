@@ -74,6 +74,7 @@ export default {
       birthDate: user.birthDate,
       gender: user.gender,
       description: user.description,
+      avatar: user.avatar,
     };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
@@ -138,6 +139,7 @@ export default {
       birthDate: userInfo.birthDate,
       gender: userInfo.gender,
       description: userInfo.description,
+      avatar: userInfo.avatar,
     };
 
     res.status(200).json({ user });
