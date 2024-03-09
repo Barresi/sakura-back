@@ -1,5 +1,7 @@
 import { Gender } from "@prisma/client";
 import Database from "../clients/database";
+import path from "path";
+import fs from "fs/promises";
 
 const db = Database.instance;
 
@@ -67,6 +69,11 @@ export default {
         birthDate: account.birthDate ? new Date(account.birthDate) : undefined,
       },
     });
+  },
+  deleteAvatar: async (userId: string, filename: string) => {
+    const filePath = path.join("images/avatars", filename);
+    await fs.unlink(filePath);
+    await db.user.update({ where: { id: userId }, data: { avatar: null } });
   },
   updateSecurity: async (userId: string, email?: string, password?: string) => {
     return db.user.update({
