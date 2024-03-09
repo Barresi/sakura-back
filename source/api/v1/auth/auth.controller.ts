@@ -147,11 +147,6 @@ export default {
       const userId = req.userId;
       const account = req.body;
 
-      const user = await User.getUserById(userId);
-      if (user && user.avatar) {
-        await User.deleteAvatar(userId, user.avatar);
-      }
-
       upload.single("avatar")(req, res, async (err: any) => {
         if (err) {
           if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
@@ -163,6 +158,11 @@ export default {
           }
         } else if (err) {
           return res.status(500).json({ msg: "Внутренняя ошибка сервера" });
+        }
+
+        const user = await User.getUserById(userId);
+        if (user && user.avatar) {
+          await User.deleteAvatar(userId, user.avatar);
         }
 
         if (req.file) {
