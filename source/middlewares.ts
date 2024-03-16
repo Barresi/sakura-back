@@ -29,10 +29,14 @@ export function preMiddlewares() {
 // - - - - - - //
 
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  req.log.error(err);
+  if (err) {
+    req.log.error(err);
 
-  if (err instanceof ZodError) {
-    res.status(400).json({ msg: "Некорректные данные" });
+    if (err instanceof ZodError) {
+      res.status(400).json({ msg: "Некорректные данные" });
+    }
+
+    res.status(500).json({ msg: "Внутренняя ошибка сервера" });
   }
 
   res.status(500).json({ msg: "Внутренняя ошибка сервера" });
