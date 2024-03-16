@@ -7,7 +7,7 @@ import {
   usernameRegex,
   nameRegex,
 } from "./auth.validation";
-import User from "source/data/user";
+import User from "../../../data/user";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -15,7 +15,7 @@ import {
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { z } from "zod";
-import { upload } from "source/clients/upload";
+import { upload } from "../../../clients/upload";
 import { NextFunction } from "express-serve-static-core";
 import multer from "multer";
 
