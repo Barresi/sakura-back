@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Request, Response } from "express";
 
 export const usernameRegex = /^@[a-zA-Z0-9_-]+$/;
-export const nameRegex = /^[а-яА-Яa-zA-Z]+$/u;
+export const nameRegex = /^[а-яА-ЯёЁa-zA-Z]+$/u;
 export const emailRegex = /^(?=.{1,256}$)[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const passwordRegex = /^[a-zA-Z!@#-_=+$%()/.,`^&*\d]+$/;
 

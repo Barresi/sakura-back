@@ -10,7 +10,18 @@ export const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
 export const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
 
 export default {
-  getUserNotifications: async (userId: string) => {
+  getUserAllNotifications: async (userId: string) => {
+    return db.notification.findMany({
+      where: {
+        recipients: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+    });
+  },
+  getUnreadNotifications: async (userId: string) => {
     return db.notification.findMany({
       where: {
         read: false,

@@ -71,7 +71,7 @@ export default {
     });
   },
   deleteAvatar: async (userId: string, filename: string) => {
-    const filePath = path.join("images/avatars", filename);
+    const filePath = path.join("images/avatars/", filename);
     await fs.unlink(filePath);
     await db.user.update({ where: { id: userId }, data: { avatar: null } });
   },
