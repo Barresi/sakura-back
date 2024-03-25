@@ -18,6 +18,9 @@ import { z } from "zod";
 import { upload } from "../../../clients/upload";
 import { NextFunction } from "express-serve-static-core";
 import multer from "multer";
+import Logger from "../../../clients/logger";
+
+const logger = Logger.instance;
 
 function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -204,6 +207,7 @@ export default {
         }
 
         const updatedAccount = await User.updateAccount(userId, account);
+        logger.info(account.avatar);
 
         const updatedFields = {
           username: updatedAccount.username,
