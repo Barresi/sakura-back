@@ -4,8 +4,9 @@ import {
   validateSignup,
   emailRegex,
   passwordRegex,
-  usernameRegex,
-  nameRegex,
+  validateUsername,
+  validateFirstName,
+  validateLastName,
 } from "./auth.validation";
 import User from "../../../data/user";
 import {
@@ -15,22 +16,18 @@ import {
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { z } from "zod";
-import { upload } from "../../../clients/upload";
 import { NextFunction } from "express-serve-static-core";
-import multer from "multer";
-import Logger from "../../../clients/logger";
 
-const logger = Logger.instance;
-
-function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalizeFirstLetter(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 export default {
   signup: async (req: Request, res: Response) => {
-    const body = validateSignup(req, res);
-    if (!body) {
-      return res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
+    const body = req.body;
+
+    if (body) {
+      validateSignup(body);
     }
 
     const existingUser = await User.emailAlreadyRegistered(body.email);
@@ -78,6 +75,7 @@ export default {
       gender: user.gender,
       description: user.description,
       avatar: user.avatar,
+      banner: user.banner,
     };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
@@ -143,89 +141,70 @@ export default {
       gender: userInfo.gender,
       description: userInfo.description,
       avatar: userInfo.avatar,
+      banner: userInfo.banner,
     };
 
     res.status(200).json({ user });
   },
   updateAccount: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.userId;
-      const account = req.body;
+    const userId = req.userId;
+    const account = req.body;
 
-      upload.single("avatar")(req, res, async (err: any) => {
-        if (err) {
-          if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
-            return res
-              .status(400)
-              .json({ msg: "Размер файла превышает допустимый лимит (10MB)" });
-          } else if (err.status === 400) {
-            return res.status(400).json({ msg: err.message });
-          }
-        } else if (err) {
-          return res.status(500).json({ msg: "Внутренняя ошибка сервера" });
-        }
-
-        const user = await User.getUserById(userId);
-        if (user && user.avatar) {
-          await User.deleteAvatar(userId, user.avatar);
-        }
-
-        if (req.file) {
-          account.avatar = req.file.filename;
-        }
-
-        if (account.username) {
-          account.username = z
-            .string()
-            .trim()
-            .regex(usernameRegex)
-            .min(5)
-            .max(20)
-            .parse(account.username);
-          const existingUsername = await User.checkUsername(account.username, userId);
-          if (existingUsername) {
-            return res.status(409).json({ msg: "Этот username уже занят" });
-          }
-        }
-        if (account.firstName) {
-          account.firstName = z
-            .string()
-            .trim()
-            .regex(nameRegex)
-            .min(2)
-            .max(20)
-            .parse(capitalizeFirstLetter(account.firstName));
-        }
-        if (account.lastName) {
-          account.lastName = z
-            .string()
-            .trim()
-            .regex(nameRegex)
-            .min(2)
-            .max(20)
-            .parse(capitalizeFirstLetter(account.lastName));
-        }
-
-        const updatedAccount = await User.updateAccount(userId, account);
-        logger.info(account.avatar);
-
-        const updatedFields = {
-          username: updatedAccount.username,
-          firstName: updatedAccount.firstName,
-          lastName: updatedAccount.lastName,
-          city: updatedAccount.city,
-          birthDate: updatedAccount.birthDate,
-          gender: updatedAccount.gender,
-          description: updatedAccount.description,
-          avatar: account.avatar,
-        };
-
-        res.status(200).json({ updatedFields });
-      });
-    } catch (error: any) {
-      res.status(400).json({ msg: "Failed to update account: " + error.message });
-      next(error);
+    if (account.username) {
+      validateUsername(account.username);
     }
+
+    const existingUsername = await User.checkUsername(account.username, userId);
+    if (existingUsername) {
+      return res.status(409).json({ msg: "Этот username уже занят" });
+    }
+
+    if (account.firstName) {
+      validateFirstName(account.firstName);
+    }
+
+    if (account.lastName) {
+      validateLastName(account.lastName);
+    }
+
+    const files = req.files;
+
+    if (files && Array.isArray(files)) {
+      for (const file of files) {
+        if (file.fieldname === "avatar") {
+          account.avatar = file.filename;
+        } else if (file.fieldname === "banner") {
+          account.banner = file.filename;
+        }
+      }
+    } else if (files && typeof files === "object") {
+      if (files["avatar"]) {
+        account.avatar = files["avatar"][0].filename;
+      }
+      if (files["banner"]) {
+        account.banner = files["banner"][0].filename;
+      }
+    }
+
+    const updatedAccount = await User.updateAccount(userId, {
+      ...account,
+      firstName: account.firstName ? capitalizeFirstLetter(account.firstName) : undefined,
+      lastName: account.lastName ? capitalizeFirstLetter(account.lastName) : undefined,
+    });
+
+    const updatedFields = {
+      username: updatedAccount.username,
+      firstName: updatedAccount.firstName,
+      lastName: updatedAccount.lastName,
+      city: updatedAccount.city,
+      birthDate: updatedAccount.birthDate,
+      gender: updatedAccount.gender,
+      description: updatedAccount.description,
+      avatar: account.avatar,
+      banner: account.banner,
+    };
+
+    res.status(200).json({ updatedFields });
   },
   updateSecurity: async (req: Request, res: Response) => {
     const userId = req.userId;

@@ -4,14 +4,25 @@ import { Request } from "express";
 
 export const upload = multer({
   storage: multer.diskStorage({
-    destination: "images/avatars",
+    destination: (req, file, cb) => {
+      const type = file.fieldname;
+      if (type === "avatar") {
+        cb(null, "images/avatars");
+      } else if (type === "banner") {
+        cb(null, "images/banners");
+      } else {
+        const error = new Error("Invalid file type");
+        (error as any).status = 400;
+        cb(error, "images");
+      }
+    },
     filename: (req, file, cb) => {
       const userId = req.userId;
       const extension = path.extname(file.originalname);
-      cb(null, `${userId}${extension}`);
+      const prefix = file.fieldname;
+      cb(null, `${prefix}-${userId}${extension}`);
     },
   }),
-
   fileFilter: (
     req: Request,
     file: Express.Multer.File,
@@ -33,7 +44,7 @@ export const upload = multer({
     ];
     const extension = path.extname(file.originalname);
     if (!validTypes.includes(extension)) {
-      const error = new Error("Неверный формат аватарки");
+      const error = new Error("Invalid file type");
       (error as any).status = 400;
       cb(error);
     } else {

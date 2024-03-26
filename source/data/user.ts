@@ -1,7 +1,5 @@
 import { Gender } from "@prisma/client";
 import Database from "../clients/database";
-import path from "path";
-import fs from "fs/promises";
 
 const db = Database.instance;
 
@@ -36,16 +34,14 @@ export default {
   checkEmail: async (email: string, userId: string) => {
     return db.user.findUnique({ where: { email, NOT: { id: userId } } });
   },
-  checkUsername: async (username: string, userId: string) => {
+  checkUsername: async (username: string | undefined, userId: string) => {
+    if (!username) {
+      return null;
+    }
     return db.user.findUnique({ where: { username, NOT: { id: userId } } });
   },
   getUserById: async (userId: string) => {
-    return db.user.findUnique({
-      where: {
-        id: userId,
-        deleted: null,
-      },
-    });
+    return db.user.findUnique({ where: { id: userId, deleted: null } });
   },
   getAllUsers: async () => {
     return db.user.findMany({
@@ -70,26 +66,16 @@ export default {
       },
     });
   },
-  deleteAvatar: async (userId: string, filename: string) => {
-    const filePath = path.join("images/avatars/", filename);
-    await fs.unlink(filePath);
-    await db.user.update({ where: { id: userId }, data: { avatar: null } });
-  },
   updateSecurity: async (userId: string, email?: string, password?: string) => {
     return db.user.update({
       where: { id: userId, deleted: null },
-      data: {
-        email,
-        password,
-      },
+      data: { email, password },
     });
   },
   deleteUser: async (userId: string) => {
     return db.user.update({
       where: { id: userId, deleted: null },
-      data: {
-        deleted: new Date(),
-      },
+      data: { deleted: new Date() },
     });
   },
 };
