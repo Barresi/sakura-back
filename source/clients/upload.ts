@@ -7,9 +7,9 @@ export const upload = multer({
     destination: (req, file, cb) => {
       const type = file.fieldname;
       if (type === "avatar") {
-        cb(null, "images/avatars");
+        cb(null, "/app/images/avatars");
       } else if (type === "banner") {
-        cb(null, "images/banners");
+        cb(null, "/app/images/banners");
       } else {
         const error = new Error("Invalid file type");
         (error as any).status = 400;
