@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import Chat from "@src/data/chat";
-import Redis from "@src/clients/redis";
-import Logger from "@src/clients/logger";
+import Chat from "../data/chat";
+import Redis from "../clients/redis";
+import Logger from "../clients/logger";
 
 const redis = Redis.instance;
 const logger = Logger.instance;

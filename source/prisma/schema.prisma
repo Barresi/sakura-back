@@ -17,6 +17,11 @@ enum RequestStatus {
   ACCEPTED
 }
 
+enum Gender {
+  male
+  female
+}
+
 model User {
   id            String          @id @default(uuid())
   username      String?         @unique
@@ -24,6 +29,13 @@ model User {
   lastName      String
   email         String          @unique
   password      String
+  avatar        String?
+  banner        String?
+  
+  city          String?
+  birthDate     DateTime?
+  gender        Gender?
+  description   String?
   
   role          Role            @default(USER)
   friends       Friend[]        @relation("Friends")
@@ -31,9 +43,11 @@ model User {
   chats         Chat[]          @relation("Participants")
   messages      Message[]       @relation("Sender")
   notifications Notification[]  @relation("Recipients")
+  createdChat   Chat[]
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
 }
 
 model Friend {
@@ -54,6 +68,9 @@ model Chat {
   id            String          @id @default(uuid())
   participants  User[]          @relation("Participants")
   messages      Message[]       @relation("Messages")
+  createdById   String?
+
+  createdByUser User?           @relation(fields: [createdById], references: [id])
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt

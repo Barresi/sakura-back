@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import User from "@src/data/user";
-import Chat from "@src/data/chat";
+import User from "../../../data/user";
+import Chat from "../../../data/chat";
 
 export default {
   createChat: async (req: Request, res: Response) => {

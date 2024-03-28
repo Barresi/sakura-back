@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import Redis from "@src/clients/redis";
+import Redis from "../clients/redis";
 import wrapSocket from "./socket-wrapper";
-import Logger from "@src/clients/logger";
+import Logger from "../clients/logger";
 import { handleChatEvents } from "./chat.socket";
 import { handleMessageEvents } from "./message.socket";
 

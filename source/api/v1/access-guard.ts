@@ -1,6 +1,6 @@
-import { verifyAccessToken } from "@src/jwt";
+import { verifyAccessToken } from "../../jwt";
 import { Request, Response, NextFunction } from "express";
-import User from "@src/data/user";
+import User from "../../data/user";
 
 export default async function (req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];

@@ -1,6 +1,6 @@
-import Database from "@src/clients/database";
-import Chat from "@src/data/chat";
-import Redis from "@src/clients/redis";
+import Database from "../clients/database";
+import Chat from "../data/chat";
+import Redis from "../clients/redis";
 
 const db = Database.instance;
 const redis = Redis.instance;

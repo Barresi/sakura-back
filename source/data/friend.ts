@@ -1,5 +1,5 @@
 import { RequestStatus } from "@prisma/client";
-import Database from "@src/clients/database";
+import Database from "../clients/database";
 
 const db = Database.instance;
 
