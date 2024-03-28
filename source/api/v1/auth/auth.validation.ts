@@ -16,6 +16,22 @@ export function validateSignup(body: any) {
   return schema.parse(body);
 }
 
+export function validateEmail(email: string) {
+  const schema = z.object({
+    email: z.string().trim().regex(emailRegex),
+  });
+
+  return schema.parse({ email });
+}
+
+export function validatePassword(password: string) {
+  const schema = z.object({
+    password: z.string().trim().regex(passwordRegex).min(8).max(20),
+  });
+
+  return schema.parse({ password });
+}
+
 export function validateUsername(username: string) {
   const schema = z.object({
     username: z.string().trim().regex(usernameRegex).min(5).max(20),

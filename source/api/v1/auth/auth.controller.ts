@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { genSalt, hash, compare } from "bcryptjs";
 import {
   validateSignup,
-  emailRegex,
-  passwordRegex,
   validateUsername,
   validateFirstName,
   validateLastName,
+  validateEmail,
+  validatePassword,
 } from "./auth.validation";
 import User from "../../../data/user";
 import {
@@ -15,7 +15,6 @@ import {
   verifyRefreshToken,
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
-import { z } from "zod";
 import { NextFunction } from "express-serve-static-core";
 
 function capitalizeFirstLetter(value: string) {
@@ -24,22 +23,26 @@ function capitalizeFirstLetter(value: string) {
 
 export default {
   signup: async (req: Request, res: Response) => {
-    const body = req.body;
+    const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-    if (body) {
-      validateSignup(body);
+    if (password !== confirmPassword) {
+      return res.status(400).json({ msg: "Неверный пароль подтверждения" });
     }
 
-    const existingUser = await User.emailAlreadyRegistered(body.email);
+    if (firstName && lastName && email && password) {
+      validateSignup({ firstName, lastName, email, password });
+    }
+
+    const existingUser = await User.emailAlreadyRegistered(email);
     if (existingUser) {
       return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
     }
 
-    const hashedPassword = await hash(body.password, await genSalt());
+    const hashedPassword = await hash(password, await genSalt());
     const user = await User.createUser({
-      ...body,
-      firstName: capitalizeFirstLetter(body.firstName),
-      lastName: capitalizeFirstLetter(body.lastName),
+      firstName: capitalizeFirstLetter(firstName),
+      lastName: capitalizeFirstLetter(lastName),
+      email,
       password: hashedPassword,
     });
 
@@ -210,55 +213,37 @@ export default {
     const userId = req.userId;
     const { email, password, confirmPassword } = req.body;
 
-    try {
-      const validatedSecurityInput = {
-        email:
-          email !== undefined
-            ? z.string().trim().regex(emailRegex).parse(email)
-            : undefined,
-        password:
-          password !== undefined
-            ? z.string().trim().regex(passwordRegex).min(8).max(20).parse(password)
-            : undefined,
-      };
-
-      const user = await User.getUserById(userId);
-      if (!user) {
-        return res.status(404).json({ msg: "Пользователь не найден" });
-      }
-
-      if (validatedSecurityInput.email) {
-        const emailAlreadyRegistered = await User.checkEmail(
-          validatedSecurityInput.email,
-          userId
-        );
-        if (emailAlreadyRegistered) {
-          return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
-        }
-      }
-
-      if (validatedSecurityInput.password) {
-        validatedSecurityInput.password = await hash(
-          validatedSecurityInput.password,
-          await genSalt()
-        );
-      }
-
-      const passwordMatch = await compare(confirmPassword, user.password);
-      if (!passwordMatch) {
-        return res.status(401).json({ msg: "Неверный пароль подтверждения" });
-      }
-
-      const updatedUser = await User.updateSecurity(
-        userId,
-        validatedSecurityInput.email,
-        validatedSecurityInput.password
-      );
-
-      res.status(200).json({ email: updatedUser.email });
-    } catch (error: unknown) {
-      res.status(400).json({ msg: "Неверно заполнена форма" });
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
+
+    const passwordMatch = await compare(confirmPassword, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ msg: "Неверный пароль подтверждения" });
+    }
+
+    if (email) {
+      validateEmail(email);
+      const emailAlreadyRegistered = await User.checkEmail(email, userId);
+      if (emailAlreadyRegistered) {
+        return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
+      }
+    }
+
+    let hashedPassword;
+    if (password) {
+      validatePassword(password);
+      try {
+        hashedPassword = await hash(password, await genSalt());
+      } catch (error) {
+        return res.status(500).json({ msg: "Ошибка при хешировании пароля" });
+      }
+    }
+
+    const updatedUser = await User.updateSecurity(userId, email, hashedPassword);
+
+    res.status(200).json({ email: updatedUser.email });
   },
   deleteAccount: async (req: Request, res: Response) => {
     const userId = req.userId;

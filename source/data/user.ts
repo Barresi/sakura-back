@@ -4,7 +4,6 @@ import Database from "../clients/database";
 const db = Database.instance;
 
 type UserInput = {
-  username?: string;
   firstName: string;
   lastName: string;
   email: string;
