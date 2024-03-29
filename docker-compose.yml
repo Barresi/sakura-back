@@ -30,8 +30,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - ./postgres/data:/var/lib/postgresql/data
     networks:
       - local
 
@@ -42,9 +40,6 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DATABASES=${REDIS_DATABASES}
-    volumes:
-      - ./redis/data:/data/
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: >
       --requirepass localpass
     ports:
