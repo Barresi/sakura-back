@@ -23,26 +23,22 @@ function capitalizeFirstLetter(value: string) {
 
 export default {
   signup: async (req: Request, res: Response) => {
-    const { firstName, lastName, email, password, confirmPassword } = req.body;
+    const body = req.body;
 
-    if (password !== confirmPassword) {
-      return res.status(400).json({ msg: "Неверный пароль подтверждения" });
+    if (body) {
+      validateSignup(body);
     }
 
-    if (firstName && lastName && email && password) {
-      validateSignup({ firstName, lastName, email, password });
-    }
-
-    const existingUser = await User.emailAlreadyRegistered(email);
+    const existingUser = await User.emailAlreadyRegistered(body.email);
     if (existingUser) {
       return res.status(409).json({ msg: "Этот email уже зарегистрирован" });
     }
 
-    const hashedPassword = await hash(password, await genSalt());
+    const hashedPassword = await hash(body.password, await genSalt());
     const user = await User.createUser({
-      firstName: capitalizeFirstLetter(firstName),
-      lastName: capitalizeFirstLetter(lastName),
-      email,
+      ...body,
+      firstName: capitalizeFirstLetter(body.firstName),
+      lastName: capitalizeFirstLetter(body.lastName),
       password: hashedPassword,
     });
 
