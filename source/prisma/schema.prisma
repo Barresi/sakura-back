@@ -44,6 +44,8 @@ model User {
   messages      Message[]       @relation("Sender")
   notifications Notification[]  @relation("Recipients")
   createdChat   Chat[]
+  posts         Post[]
+  likedPost     Post[]          @relation("Liked")
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -60,6 +62,8 @@ model Friend {
   to            User            @relation("Friended", fields: [toId], references: [id])
 
   createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
 
   @@unique([fromId, toId])
 }
@@ -68,19 +72,21 @@ model Chat {
   id            String          @id @default(uuid())
   participants  User[]          @relation("Participants")
   messages      Message[]       @relation("Messages")
-  createdById   String?
+  createdById   String
 
-  createdByUser User?           @relation(fields: [createdById], references: [id])
+  createdBy     User            @relation(fields: [createdById], references: [id])
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
 }
 
 model Message {
   id            String          @id @default(uuid())
   senderId      String
-  text          String
   chatId        String
+
+  text          String
   read          Boolean         @default(false)
 
   sender        User            @relation("Sender", fields: [senderId], references: [id])
@@ -88,6 +94,7 @@ model Message {
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
 }
 
 model Notification {
@@ -99,4 +106,21 @@ model Notification {
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
+}
+
+model Post {
+  id            String          @id @default(uuid())
+  text          String?
+  pictures      String[]
+  watched       Int?            @default(0)
+
+  createdById   String
+  createdBy     User            @relation(fields: [createdById], references: [id])
+
+  likedBy       User[]          @relation("Liked")
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deleted       DateTime?
 }

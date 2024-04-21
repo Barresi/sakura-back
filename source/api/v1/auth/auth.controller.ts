@@ -69,12 +69,13 @@ export default {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      avatar: user.avatar,
+      banner: user.banner,
       city: user.city,
       birthDate: user.birthDate,
       gender: user.gender,
       description: user.description,
-      avatar: user.avatar,
-      banner: user.banner,
+      posts: user.posts,
     };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
@@ -135,12 +136,13 @@ export default {
       firstName: userInfo.firstName,
       lastName: userInfo.lastName,
       email: userInfo.email,
+      avatar: userInfo.avatar,
+      banner: userInfo.banner,
       city: userInfo.city,
       birthDate: userInfo.birthDate,
       gender: userInfo.gender,
       description: userInfo.description,
-      avatar: userInfo.avatar,
-      banner: userInfo.banner,
+      posts: userInfo.posts,
     };
 
     res.status(200).json({ user });
@@ -199,7 +201,7 @@ export default {
       birthDate: updatedAccount.birthDate,
       gender: updatedAccount.gender,
       description: updatedAccount.description,
-      avatar: account.avatar,
+      avatar: account.avatar || null,
       banner: account.banner,
     };
 

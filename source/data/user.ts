@@ -25,7 +25,33 @@ export default {
     return db.user.create({ data: user });
   },
   getUserByEmail: async (email: string) => {
-    return db.user.findUnique({ where: { email, deleted: null } });
+    return db.user.findUnique({
+      where: { email, deleted: null },
+      include: {
+        posts: {
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+            likedBy: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
   },
   emailAlreadyRegistered: async (email: string) => {
     return db.user.findUnique({ where: { email } });
@@ -40,7 +66,33 @@ export default {
     return db.user.findUnique({ where: { username, NOT: { id: userId } } });
   },
   getUserById: async (userId: string) => {
-    return db.user.findUnique({ where: { id: userId, deleted: null } });
+    return db.user.findUnique({
+      where: { id: userId, deleted: null },
+      include: {
+        posts: {
+          include: {
+            createdBy: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+            likedBy: {
+              select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
   },
   getAllUsers: async () => {
     return db.user.findMany({

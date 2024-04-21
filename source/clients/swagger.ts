@@ -40,7 +40,6 @@ const options: swaggerJsdoc.Options = {
               format: "password",
             },
           },
-          required: ["firstName", "lastName", "email", "password"],
         },
         User: {
           type: "object",
@@ -60,6 +59,26 @@ const options: swaggerJsdoc.Options = {
             email: {
               type: "string",
             },
+            avatar: {
+              type: "string",
+            },
+            banner: {
+              type: "string",
+            },
+            city: {
+              type: "string",
+            },
+            birthDate: {
+              type: "string",
+              format: "date",
+            },
+            gender: {
+              type: "string",
+              enum: ["male", "female"],
+            },
+            description: {
+              type: "string",
+            },
             friends: {
               type: "array",
               items: {
@@ -76,9 +95,19 @@ const options: swaggerJsdoc.Options = {
                   },
                   status: {
                     type: "string",
+                    enum: ["PENDING", "ACCEPTED"],
                   },
                   createdAt: {
                     type: "string",
+                    format: "date",
+                  },
+                  updatedAt: {
+                    type: "string",
+                    format: "date",
+                  },
+                  deleted: {
+                    type: "string",
+                    format: "date",
                   },
                 },
               },
@@ -99,14 +128,153 @@ const options: swaggerJsdoc.Options = {
                   },
                   status: {
                     type: "string",
+                    enum: ["PENDING", "ACCEPTED"],
                   },
                   createdAt: {
                     type: "string",
+                    format: "date",
+                  },
+                  updatedAt: {
+                    type: "string",
+                    format: "date",
+                  },
+                  deleted: {
+                    type: "string",
+                    format: "date",
                   },
                 },
               },
             },
-            required: ["id", "firstName", "lastName", "email", "friends", "friended"],
+          },
+        },
+        UserInfo: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+            },
+            username: {
+              type: "string",
+            },
+            firstName: {
+              type: "string",
+            },
+            lastName: {
+              type: "string",
+            },
+            email: {
+              type: "string",
+            },
+            avatar: {
+              type: "string",
+            },
+            banner: {
+              type: "string",
+            },
+            city: {
+              type: "string",
+            },
+            birthDate: {
+              type: "string",
+              format: "date",
+            },
+            gender: {
+              type: "string",
+              enum: ["male", "female"],
+            },
+            description: {
+              type: "string",
+            },
+            posts: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "string",
+                },
+                text: {
+                  type: "string",
+                },
+                pictures: {
+                  type: "array",
+                  items: {
+                    type: "string",
+                  },
+                },
+                watched: {
+                  type: "integer",
+                },
+                createdById: {
+                  type: "string",
+                },
+                createdBy: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    username: {
+                      type: "string",
+                    },
+                    firstName: {
+                      type: "string",
+                    },
+                    lastName: {
+                      type: "string",
+                    },
+                    avatar: {
+                      type: "string",
+                    },
+                    createdAt: {
+                      type: "string",
+                      format: "date-time",
+                    },
+                    updatedAt: {
+                      type: "string",
+                      format: "date-time",
+                    },
+                    deleted: {
+                      type: "string",
+                      format: "date-time",
+                    },
+                  },
+                },
+                likedBy: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      id: {
+                        type: "string",
+                      },
+                      username: {
+                        type: "string",
+                      },
+                      firstName: {
+                        type: "string",
+                      },
+                      lastName: {
+                        type: "string",
+                      },
+                      avatar: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+                createdAt: {
+                  type: "string",
+                  format: "date-time",
+                },
+                updatedAt: {
+                  type: "string",
+                  format: "date-time",
+                },
+                deleted: {
+                  type: "string",
+                  format: "date-time",
+                },
+              },
+            },
           },
         },
         Friend: {
@@ -128,7 +296,84 @@ const options: swaggerJsdoc.Options = {
               type: "string",
             },
           },
-          required: ["id", "fromId", "toId", "status", "createdAt"],
+        },
+        Post: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+            },
+            text: {
+              type: "string",
+            },
+            pictures: {
+              type: "array",
+              items: {
+                type: "string",
+              },
+            },
+            watched: {
+              type: "integer",
+            },
+            createdById: {
+              type: "string",
+            },
+            createdBy: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "string",
+                },
+                username: {
+                  type: "string",
+                },
+                firstName: {
+                  type: "string",
+                },
+                lastName: {
+                  type: "string",
+                },
+                avatar: {
+                  type: "string",
+                },
+              },
+            },
+            likedBy: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "string",
+                  },
+                  username: {
+                    type: "string",
+                  },
+                  firstName: {
+                    type: "string",
+                  },
+                  lastName: {
+                    type: "string",
+                  },
+                  avatar: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+            },
+            updatedAt: {
+              type: "string",
+              format: "date-time",
+            },
+            deleted: {
+              type: "string",
+              format: "date-time",
+            },
+          },
         },
       },
     },
