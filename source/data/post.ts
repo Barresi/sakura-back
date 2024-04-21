@@ -33,9 +33,8 @@ export default {
       },
     });
   },
-  getMyPosts: async (userId: string) => {
+  getAllPosts: async () => {
     return db.post.findMany({
-      where: { createdById: userId, deleted: null },
       include: {
         createdBy: {
           select: {
@@ -60,7 +59,7 @@ export default {
   },
   getMyPost: async (postId: string, userId: string) => {
     return db.post.findFirst({
-      where: { id: postId, createdById: userId, deleted: null },
+      where: { id: postId, createdById: userId },
       include: {
         createdBy: {
           select: {
@@ -85,7 +84,7 @@ export default {
   },
   getPost: async (postId: string) => {
     return db.post.findFirst({
-      where: { id: postId, deleted: null },
+      where: { id: postId },
       include: {
         createdBy: {
           select: {

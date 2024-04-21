@@ -6,7 +6,7 @@ import { upload } from "./posts.upload";
 
 const posts = Router();
 
-posts.get("/", guard, wrap(ctrl.getMyPosts));
+posts.get("/", guard, wrap(ctrl.getAllPosts));
 posts.post("/", guard, upload.array("pictures", 10), wrap(ctrl.createPost));
 posts.post("/:postId/watched", guard, wrap(ctrl.watchedPost));
 posts.patch("/:postId/liked", guard, wrap(ctrl.likedPost));

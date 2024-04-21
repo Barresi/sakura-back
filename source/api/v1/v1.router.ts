@@ -82,26 +82,7 @@ const v1 = Router();
  *                 refreshToken:
  *                   type: string
  *                 userWithoutPassword:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                     username:
- *                       type: string
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     email:
- *                       type: string
- *                     city:
- *                       type: string
- *                     birthDate:
- *                       type: string
- *                     gender:
- *                       type: string
- *                     description:
- *                       type: string
+ *                   $ref: '#/components/schemas/UserInfo'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -227,24 +208,7 @@ const v1 = Router();
  *               type: object
  *               properties:
  *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                     username:
- *                       type: string
- *                     firstName:
- *                       type: string
- *                     lastName:
- *                       type: string
- *                     city:
- *                       type: string
- *                     birthDate:
- *                       type: string
- *                     gender:
- *                       type: string
- *                     description:
- *                       type: string
+ *                   $ref: '#/components/schemas/UserInfo'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -1207,7 +1171,7 @@ v1.use("/notifications", notifications);
  * @openapi
  * /api/v1/posts:
  *   get:
- *     summary: Get all posts created by user
+ *     summary: Get all posts
  *     tags:
  *       - Posts
  *     security:

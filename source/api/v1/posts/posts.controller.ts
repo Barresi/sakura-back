@@ -4,9 +4,8 @@ import fs from "fs/promises";
 import { folderPath } from "./posts.upload";
 
 export default {
-  getMyPosts: async (req: Request, res: Response) => {
-    const userId = req.userId;
-    const posts = await Post.getMyPosts(userId);
+  getAllPosts: async (req: Request, res: Response) => {
+    const posts = await Post.getAllPosts();
     res.status(200).json({ posts });
   },
   createPost: async (req: Request, res: Response) => {
