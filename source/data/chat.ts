@@ -1,5 +1,5 @@
-import Database from "@src/clients/database";
-import { Chat, Message } from "@prisma/client";
+import Database from "../clients/database";
+import { Message } from "@prisma/client";
 
 const db = Database.instance;
 
@@ -45,6 +45,7 @@ export default {
           participants: {
             connect: [{ id: userId }, { id: friendId }],
           },
+          createdById: userId,
         },
       });
       return newChat.id;
@@ -93,6 +94,7 @@ export default {
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
         unread: unreadCount,
+        createdBy: chat.createdById,
       };
     });
 

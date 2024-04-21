@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import User from "@src/data/user";
-import Friend from "@src/data/friend";
-import FriendRequest from "@src/data/friend-request";
-import Notification from "@src/data/notification";
+import User from "../../../data/user";
+import Friend from "../../../data/friend";
+import FriendRequest from "../../../data/friend-request";
+import Notification from "../../../data/notification";
 
 export default {
   getAllUsers: async (req: Request, res: Response) => {
@@ -17,11 +17,6 @@ export default {
       return res
         .status(400)
         .json({ msg: "Вы не можете отправить заявку в друзья самому себе" });
-    }
-
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
     const friend = await User.getUserById(friendId);

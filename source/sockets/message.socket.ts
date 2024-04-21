@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import Message from "@src/data/message";
+import Message from "../data/message";
 import { handleNtfMessageEvents } from "./ntfMessage.socket";
 
 export const handleMessageEvents = (io: Server, socket: Socket) => {

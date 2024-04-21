@@ -68,9 +68,6 @@ const v1 = Router();
  *                 type: string
  *               password:
  *                 type: string
- *             required:
- *               - email
- *               - password
  *     responses:
  *       '200':
  *         description: OK
@@ -88,16 +85,22 @@ const v1 = Router();
  *                   properties:
  *                     id:
  *                       type: string
+ *                     username:
+ *                       type: string
  *                     firstName:
  *                       type: string
  *                     lastName:
  *                       type: string
  *                     email:
  *                       type: string
- *                 required:
- *                   - accessToken
- *                   - refreshToken
- *                   - userWithoutPassword
+ *                     city:
+ *                       type: string
+ *                     birthDate:
+ *                       type: string
+ *                     gender:
+ *                       type: string
+ *                     description:
+ *                       type: string
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -129,8 +132,6 @@ const v1 = Router();
  *             properties:
  *               refreshToken:
  *                 type: string
- *             required:
- *               - refreshToken
  *     responses:
  *       '200':
  *         description: OK
@@ -143,9 +144,6 @@ const v1 = Router();
  *                   type: string
  *                 refreshToken:
  *                   type: string
- *                 required:
- *                   - accessToken
- *                   - refreshToken
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -183,8 +181,6 @@ const v1 = Router();
  *             properties:
  *               refreshToken:
  *                 type: string
- *             required:
- *               - refreshToken
  *     responses:
  *       '200':
  *         description: OK
@@ -234,17 +230,237 @@ const v1 = Router();
  *                   properties:
  *                     id:
  *                       type: string
- *                     email:
+ *                     username:
  *                       type: string
- *                   required:
- *                     - id
- *                     - email
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     city:
+ *                       type: string
+ *                     birthDate:
+ *                       type: string
+ *                     gender:
+ *                       type: string
+ *                     description:
+ *                       type: string
  *       '401':
  *         description: Unauthorized
  *         content:
  *           application/json:
  *             example:
  *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/account:
+ *   patch:
+ *     summary: Update user account details
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               birthDate:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 updatedFields:
+ *                   type: object
+ *                   properties:
+ *                    username:
+ *                      type: string
+ *                    firstName:
+ *                      type: string
+ *                    lastName:
+ *                      type: string
+ *                    city:
+ *                      type: string
+ *                    birthDate:
+ *                      type: string
+ *                    gender:
+ *                      type: string
+ *                    description:
+ *                      type: string
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Некорректные данные
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Этот username уже занят
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/security:
+ *   patch:
+ *     summary: Update user security details
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               confirmPassword:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               email: string
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Неверно заполнена форма
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пользователь не найден
+ *       '409':
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Этот email уже зарегистрирован
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/auth/delete:
+ *   delete:
+ *     summary: Delete user acoount
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               confirmPassword:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Профиль успешно удален
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пароль подтверждения не предоставлен
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен, Неверный пароль подтверждения
  *       '403':
  *         description: Forbidden
  *         content:
@@ -297,12 +513,6 @@ v1.use("/auth", auth);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -398,12 +608,6 @@ v1.use("/users", users);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -510,12 +714,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -565,12 +763,6 @@ v1.use("/friends", friends);
  *           application/json:
  *             example:
  *               msg: Access token устарел
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             example:
- *               msg: Пользователь не найден
  *       '500':
  *         description: Internal server error
  *         content:
@@ -625,7 +817,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
+ *               msg: Пользователь не найден, Заявка в друзья не найдена
  *       '500':
  *         description: Internal server error
  *         content:
@@ -674,7 +866,7 @@ v1.use("/friends", friends);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пользователь не найден, Заявка в друзья не найдена, Друг не найден
+ *               msg: Пользователь не найден, Заявка в друзья не найдена
  *       '500':
  *         description: Internal server error
  *         content:
@@ -883,6 +1075,79 @@ v1.use("/messenger", messenger);
  *       - Notifications
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 notifications:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       type:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       read:
+ *                         type: boolean
+ *                         default: false
+ *                       createdAt:
+ *                         type: string
+ *                       updatedAt:
+ *                         type: string
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Уведомления не найдены
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/notifications:
+ *   patch:
+ *     summary: Mark notifications as read for a user
+ *     tags:
+ *       - Notifications
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Array of notification IDs to mark as read
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               notificationIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       '200':
  *         description: OK

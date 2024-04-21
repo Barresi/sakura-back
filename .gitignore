@@ -1,6 +1,12 @@
 /node_modules
 pgdata
+/.husky
+/logs
 
 /compiled
+/build
+
+/postgres
+/redis
 
 .env
