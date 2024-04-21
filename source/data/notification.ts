@@ -10,7 +10,7 @@ export const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
 export const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
 
 export default {
-  getUserNotifications: async (userId: string) => {
+  getUserAllNotifications: async (userId: string) => {
     return db.notification.findMany({
       where: {
         recipients: {
@@ -20,6 +20,32 @@ export default {
         },
       },
     });
+  },
+  getUnreadNotifications: async (userId: string) => {
+    return db.notification.findMany({
+      where: {
+        read: false,
+        recipients: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+    });
+  },
+  markNotificationsAsRead: async (notificationIds: string[]) => {
+    const updatedNotifications = await db.notification.updateMany({
+      where: {
+        id: {
+          in: notificationIds,
+        },
+      },
+      data: {
+        read: true,
+      },
+    });
+
+    return updatedNotifications;
   },
   sendFriendRequestNtf: async (userId: string, friendId: string, io: Server) => {
     const content = `${userId} подал заявку в друзья`;

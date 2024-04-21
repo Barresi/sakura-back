@@ -1,7 +1,7 @@
 export default {
   deploy: {
     port: process.env.EXPRESS_PORT,
-    frontendUrl: process.env.FRONTEND_URL,
+    frontendUrl: process.env.CORS_ORIGIN,
   },
   database: {
     logs: process.env.DB_LOGS,

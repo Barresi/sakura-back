@@ -12,9 +12,8 @@ import { setupSocketConnection } from "./sockets/setup.socket";
 import swaggerDocs from "./clients/swagger";
 
 const PORT = process.env.EXPRESS_PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
-const CORS_ORIGIN =
-  process.env.FRONTEND_URL || "https://sakura-front-a4sd99sfe-barresis-team.vercel.app/";
+const HOST = process.env.HOST || "sakura-back";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "https://ssakura.ru";
 
 async function main() {
   const app = express();

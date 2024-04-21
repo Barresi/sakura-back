@@ -45,6 +45,7 @@ export default {
           participants: {
             connect: [{ id: userId }, { id: friendId }],
           },
+          createdById: userId,
         },
       });
       return newChat.id;
@@ -93,6 +94,7 @@ export default {
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
         unread: unreadCount,
+        createdBy: chat.createdById,
       };
     });
 

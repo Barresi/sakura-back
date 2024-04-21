@@ -37,10 +37,8 @@
     "paths": {
       /* Specify a set of entries that re-map imports to additional lookup locations. */
       // "@src/*": ["source/*"]
-
       // Just as an example of what you can
       // "@services/*": ["src/services/*"],
-
       // Or even cooler
       // "@/*": ["src/*"]
     },

@@ -1,17 +1,12 @@
+import { RequestStatus } from "@prisma/client";
 import { Request, Response } from "express";
-import User from "../../../data/user";
 import FriendRequest from "../../../data/friend-request";
 import Notification from "../../../data/notification";
-import { RequestStatus } from "@prisma/client";
+import User from "../../../data/user";
 
 export default {
   getAllReceivedRequests: async (req: Request, res: Response) => {
     const userId = req.userId;
-
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
 
     const requests = await FriendRequest.getAllReceivedRequests(userId);
 
@@ -19,11 +14,6 @@ export default {
   },
   getAllSentRequests: async (req: Request, res: Response) => {
     const userId = req.userId;
-
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
 
     const requests = await FriendRequest.getAllSentRequests(userId);
 
@@ -33,12 +23,8 @@ export default {
     const userId = req.userId;
     const requestId = req.params.requestId;
 
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
-
     const request = await FriendRequest.findRequestById(requestId, userId);
+
     if (!request) {
       return res.status(404).json({ msg: "Заявка в друзья не найдена" });
     }
@@ -51,26 +37,22 @@ export default {
       return res.status(400).json({ msg: "Вы не можете принять свою заявку" });
     }
 
+    const friend = await FriendRequest.findFriendByRequestId(requestId, userId);
+    if (!friend) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
+    }
+
     await FriendRequest.acceptRequest(userId, requestId);
 
-    const friendId = await FriendRequest.findFriendId(requestId, userId);
-    if (!friendId) {
-      return res.status(404).json({ msg: "Друг не найден" });
-    }
-    await Notification.sendAcceptRequestNtf(userId, friendId, req.app.get("io"));
+    await Notification.sendAcceptRequestNtf(userId, friend.id, req.app.get("io"));
 
-    return res
-      .status(200)
-      .json({ msg: `Вы приняли заявку в друзья от ${user.firstName} ${user.lastName}` });
+    return res.status(200).json({
+      msg: `Вы приняли заявку в друзья от ${friend.firstName} ${friend.lastName}`,
+    });
   },
   rejectRequest: async (req: Request, res: Response) => {
     const userId = req.userId;
     const requestId = req.params.requestId;
-
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "Пользователь не найден" });
-    }
 
     const request = await FriendRequest.findRequestById(requestId, userId);
     if (!request) {
@@ -83,16 +65,17 @@ export default {
         .json({ msg: "Вы можете отклонить только входящие вам заявки" });
     }
 
-    const friendId = await FriendRequest.findFriendId(requestId, userId);
-    if (!friendId) {
-      return res.status(404).json({ msg: "Друг не найден" });
+    const friend = await FriendRequest.findFriendByRequestId(requestId, userId);
+    if (!friend) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
-    await Notification.sendRejectRequestNtf(userId, friendId, req.app.get("io"));
 
     await FriendRequest.rejectRequest(userId, requestId);
 
+    await Notification.sendRejectRequestNtf(userId, friend.id, req.app.get("io"));
+
     return res.status(200).json({
-      msg: `Вы отклонили заявку в друзья от ${user.firstName} ${user.lastName}`,
+      msg: `Вы отклонили заявку в друзья от ${friend.firstName} ${friend.lastName}`,
     });
   },
   cancelRequest: async (req: Request, res: Response) => {

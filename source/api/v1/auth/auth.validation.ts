@@ -1,21 +1,57 @@
 import { z } from "zod";
-import { Request, Response } from "express";
 
-export function signup(req: Request, res: Response) {
-  // https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
-  const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/;
+export const usernameRegex = /^@[a-zA-Z0-9_-]+$/;
+export const nameRegex = /^[а-яА-ЯёЁa-zA-Z]+$/u;
+export const emailRegex = /^(?=.{1,256}$)[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+export const passwordRegex = /^[a-zA-Z!@#-_=+$%()/.,`^&*\d]+$/;
 
+export function validateSignup(body: any) {
   const schema = z.object({
-    username: z.string().optional(),
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email().trim(),
-    password: z.string().regex(passwordRegex).trim(),
+    firstName: z.string().trim().regex(nameRegex).min(2).max(20),
+    lastName: z.string().trim().regex(nameRegex).min(2).max(20),
+    email: z.string().trim().regex(emailRegex),
+    password: z.string().trim().regex(passwordRegex).min(8).max(20),
   });
 
-  try {
-    return schema.parse(req.body);
-  } catch (error: unknown) {
-    res.status(400).json({ msg: "Неверно заполнена форма регистрации" });
-  }
+  return schema.parse(body);
+}
+
+export function validateEmail(email: string) {
+  const schema = z.object({
+    email: z.string().trim().regex(emailRegex),
+  });
+
+  return schema.parse({ email });
+}
+
+export function validatePassword(password: string) {
+  const schema = z.object({
+    password: z.string().trim().regex(passwordRegex).min(8).max(20),
+  });
+
+  return schema.parse({ password });
+}
+
+export function validateUsername(username: string) {
+  const schema = z.object({
+    username: z.string().trim().regex(usernameRegex).min(5).max(20),
+  });
+
+  return schema.parse({ username });
+}
+
+export function validateFirstName(firstName: string) {
+  const schema = z.object({
+    firstName: z.string().trim().regex(nameRegex).min(2).max(20),
+  });
+
+  return schema.parse({ firstName });
+}
+
+export function validateLastName(lastName: string) {
+  const schema = z.object({
+    lastName: z.string().trim().regex(nameRegex).min(2).max(20),
+  });
+
+  return schema.parse({ lastName });
 }
