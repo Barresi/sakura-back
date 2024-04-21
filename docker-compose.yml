@@ -17,6 +17,7 @@ services:
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
     volumes:
       - /opt/actions-runner-back/_work/sakura-back/sakura-back:/app
+      - /opt/actions-runner-back/_work/sakura-back/sakura-back/images:/app/images
     command: bash -c "npm install && npx prisma generate && npm run build && npx prisma migrate deploy && npm run start"
     ports:
       - "5000:5000"
