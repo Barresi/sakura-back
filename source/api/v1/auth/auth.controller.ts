@@ -199,7 +199,7 @@ export default {
       birthDate: updatedAccount.birthDate,
       gender: updatedAccount.gender,
       description: updatedAccount.description,
-      avatar: account.avatar,
+      avatar: account.avatar || null,
       banner: account.banner,
     };
 

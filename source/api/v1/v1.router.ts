@@ -5,6 +5,7 @@ import users from "./users/users.router";
 import firendRequests from "./friendRequests/friendRequests.router";
 import messenger from "./messenger/messenger.router";
 import notifications from "./notifications/notifications.router";
+import posts from "./posts/posts.router";
 
 const v1 = Router();
 
@@ -1201,5 +1202,241 @@ v1.use("/messenger", messenger);
  */
 
 v1.use("/notifications", notifications);
+
+/**
+ * @openapi
+ * /api/v1/posts:
+ *   get:
+ *     summary: Get all posts created by user
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                posts:
+ *                 type: array
+ *                 items:
+ *                  $ref: '#/components/schemas/Post'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/posts:
+ *   post:
+ *     summary: Create a new post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               text:
+ *                 type: string
+ *               pictures:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/posts/{postId}/watched:
+ *   post:
+ *     summary: Mark a post as watched
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               watched: 1
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пост не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/posts/{postId}/liked:
+ *   patch:
+ *     summary: Like or unlike a post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пост не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+/**
+ * @openapi
+ * /api/v1/posts/{postId}:
+ *   delete:
+ *     summary: Delete a post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Вы удалили пост postId
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token не предоставлен
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Access token устарел
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Пост не найден
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Внутренняя ошибка сервера
+ */
+
+v1.use("/posts", posts);
 
 export default v1;

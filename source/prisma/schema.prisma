@@ -45,7 +45,7 @@ model User {
   notifications Notification[]  @relation("Recipients")
   createdChat   Chat[]
   posts         Post[]
-  likedPost     LikedPost[]
+  likedPost     Post[]          @relation("Liked")
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -111,31 +111,16 @@ model Notification {
 
 model Post {
   id            String          @id @default(uuid())
-  text          String
+  text          String?
   pictures      String[]
-  watched       Int?
+  watched       Int?            @default(0)
 
   createdById   String
   createdBy     User            @relation(fields: [createdById], references: [id])
 
-  likedById     String?
-  likedBy       LikedPost[]
+  likedBy       User[]          @relation("Liked")
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deleted       DateTime?
-}
-
-model LikedPost {
-  likedById     String
-  postId        String
-
-  likedBy       User            @relation(fields: [likedById], references: [id])
-  post          Post            @relation(fields: [postId], references: [id])
-
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  deleted       DateTime?
-
-  @@unique([likedById, postId])
 }
