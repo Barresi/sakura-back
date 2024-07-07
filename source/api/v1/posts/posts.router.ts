@@ -8,7 +8,7 @@ const posts = Router();
 
 posts.get("/", guard, wrap(ctrl.getAllPosts));
 posts.post("/", guard, upload.array("pictures", 10), wrap(ctrl.createPost));
-posts.post("/:postId/watched", guard, wrap(ctrl.watchedPost));
+posts.post("/watched", guard, wrap(ctrl.watchedPost));
 posts.patch("/:postId/liked", guard, wrap(ctrl.likedPost));
 posts.delete("/:postId", guard, wrap(ctrl.deletePost));
 

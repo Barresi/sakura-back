@@ -30,11 +30,21 @@ export default {
             avatar: true,
           },
         },
+        watchedBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
       },
     });
   },
   getAllPosts: async () => {
     return db.post.findMany({
+      where: { deleted: null },
       include: {
         createdBy: {
           select: {
@@ -46,6 +56,15 @@ export default {
           },
         },
         likedBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        watchedBy: {
           select: {
             id: true,
             username: true,
@@ -59,32 +78,12 @@ export default {
   },
   getMyPost: async (postId: string, userId: string) => {
     return db.post.findFirst({
-      where: { id: postId, createdById: userId },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-        likedBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-      },
+      where: { id: postId, createdById: userId, deleted: null },
     });
   },
   getPost: async (postId: string) => {
     return db.post.findFirst({
-      where: { id: postId },
+      where: { id: postId, deleted: null },
       include: {
         createdBy: {
           select: {
@@ -104,20 +103,85 @@ export default {
             avatar: true,
           },
         },
+        watchedBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
       },
     });
   },
-  watchedPost: async (postId: string) => {
-    await db.post.update({
-      where: { id: postId },
-      data: { watched: { increment: 1 } },
+  getPosts: async (postIds: string[]) => {
+    return db.post.findMany({
+      where: { id: { in: postIds }, deleted: null },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        likedBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        watchedBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+  },
+  getUserWatchedPosts: async (userId: string, postIds: string[]) => {
+    const userWatchedPosts = await db.user.findFirst({
+      where: { id: userId },
+      include: {
+        watchedPosts: {
+          where: { id: { in: postIds } },
+          select: { id: true },
+        },
+      },
     });
 
-    const post = await db.post.findUnique({
-      where: { id: postId, deleted: null },
-      select: { watched: true },
+    return userWatchedPosts?.watchedPosts.map((post) => post.id) || [];
+  },
+  watchedPosts: async (postIds: string[], userId: string) => {
+    const currentUser = await db.user.findFirst({
+      where: { id: userId },
+      include: { watchedPosts: true },
     });
-    return post?.watched || 0;
+
+    const newPosts = postIds.filter(
+      (postId) => !currentUser?.watchedPosts.find((post) => post.id === postId)
+    );
+
+    if (newPosts.length > 0) {
+      await db.user.update({
+        where: { id: userId },
+        data: {
+          watchedPosts: {
+            connect: newPosts.map((postId) => ({ id: postId })),
+          },
+        },
+      });
+    }
   },
   addLikeToPost: async (postId: string, userId: string) => {
     return db.post.update({

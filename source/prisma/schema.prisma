@@ -45,7 +45,8 @@ model User {
   notifications Notification[]  @relation("Recipients")
   createdChat   Chat[]
   posts         Post[]
-  likedPost     Post[]          @relation("Liked")
+  likedPosts    Post[]          @relation("Liked")
+  watchedPosts  Post[]          @relation("Watched")
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -113,12 +114,12 @@ model Post {
   id            String          @id @default(uuid())
   text          String?
   pictures      String[]
-  watched       Int?            @default(0)
 
   createdById   String
   createdBy     User            @relation(fields: [createdById], references: [id])
 
   likedBy       User[]          @relation("Liked")
+  watchedBy     User[]          @relation("Watched")
 
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt

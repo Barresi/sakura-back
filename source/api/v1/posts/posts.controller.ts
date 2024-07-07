@@ -6,7 +6,7 @@ import { folderPath } from "./posts.upload";
 export default {
   getAllPosts: async (req: Request, res: Response) => {
     const posts = await Post.getAllPosts();
-    res.status(200).json({ posts });
+    res.status(200).json(posts);
   },
   createPost: async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -18,19 +18,30 @@ export default {
   },
   watchedPost: async (req: Request, res: Response) => {
     const userId = req.userId;
-    const postId = req.params.postId;
+    const { postIds } = req.body;
 
-    const post = await Post.getPost(postId);
-    if (!post) {
-      return res.status(404).json({ msg: "Пост не найден" });
+    const posts = await Post.getPosts(postIds);
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ msg: "Посты не найдены" });
     }
 
-    if (post && post.createdById !== userId) {
-      await Post.watchedPost(postId);
+    const postIdsToUpdate = posts
+      .filter((post) => post.createdById !== userId)
+      .map((post) => post.id);
+
+    const alreadyWatchedPosts = await Post.getUserWatchedPosts(userId, postIdsToUpdate);
+
+    const newPostIdsToUpdate = postIdsToUpdate.filter(
+      (postId) => !alreadyWatchedPosts.includes(postId)
+    );
+
+    if (newPostIdsToUpdate.length > 0) {
+      await Post.watchedPosts(newPostIdsToUpdate, userId);
     }
 
-    const updatedPost = await Post.getPost(postId);
-    res.status(200).json({ watched: updatedPost?.watched || 0 });
+    const watchedPosts = await Post.getPosts(postIds);
+
+    res.status(200).json(watchedPosts);
   },
   likedPost: async (req: Request, res: Response) => {
     const userId = req.userId;
@@ -44,11 +55,11 @@ export default {
     if (post?.likedBy.find((user) => user.id === userId)) {
       await Post.removeLikeFromPost(postId, userId);
       const updatedPost = await Post.getPost(postId);
-      res.status(200).json({ post: updatedPost });
+      res.status(200).json(updatedPost);
     } else {
       await Post.addLikeToPost(postId, userId);
       const updatedPost = await Post.getPost(postId);
-      res.status(200).json({ post: updatedPost });
+      res.status(200).json(updatedPost);
     }
   },
   deletePost: async (req: Request, res: Response) => {

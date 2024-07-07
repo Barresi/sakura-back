@@ -361,6 +361,29 @@ const options: swaggerJsdoc.Options = {
                 },
               },
             },
+            watchedBy: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "string",
+                  },
+                  username: {
+                    type: "string",
+                  },
+                  firstName: {
+                    type: "string",
+                  },
+                  lastName: {
+                    type: "string",
+                  },
+                  avatar: {
+                    type: "string",
+                  },
+                },
+              },
+            },
             createdAt: {
               type: "string",
               format: "date-time",

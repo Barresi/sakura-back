@@ -1181,13 +1181,10 @@ v1.use("/notifications", notifications);
  *         description: OK
  *         content:
  *           application/json:
- *            schema:
- *              type: object
- *              properties:
- *                posts:
- *                 type: array
- *                 items:
- *                  $ref: '#/components/schemas/Post'
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -1259,26 +1256,33 @@ v1.use("/notifications", notifications);
 
 /**
  * @openapi
- * /api/v1/posts/{postId}/watched:
+ * /api/v1/posts/watched:
  *   post:
- *     summary: Mark a post as watched
+ *     summary: Mark posts as watched
  *     tags:
  *       - Posts
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: postId
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               postIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       '200':
  *         description: OK
  *         content:
  *           application/json:
- *             example:
- *               watched: 1
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -1296,7 +1300,7 @@ v1.use("/notifications", notifications);
  *         content:
  *           application/json:
  *             example:
- *               msg: Пост не найден
+ *               msg: Посты не найдены
  *       '500':
  *         description: Internal server error
  *         content:

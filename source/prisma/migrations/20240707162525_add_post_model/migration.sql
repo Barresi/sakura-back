@@ -25,11 +25,9 @@ ALTER TABLE "Notification" ADD COLUMN     "deleted" TIMESTAMP(3);
 -- CreateTable
 CREATE TABLE "Post" (
     "id" TEXT NOT NULL,
-    "text" TEXT NOT NULL,
+    "text" TEXT,
     "pictures" TEXT[],
-    "watched" INTEGER,
     "createdById" TEXT NOT NULL,
-    "likedById" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deleted" TIMESTAMP(3),
@@ -38,16 +36,28 @@ CREATE TABLE "Post" (
 );
 
 -- CreateTable
-CREATE TABLE "LikedPost" (
-    "likedById" TEXT NOT NULL,
-    "postId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deleted" TIMESTAMP(3)
+CREATE TABLE "_Liked" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_Watched" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "LikedPost_likedById_postId_key" ON "LikedPost"("likedById", "postId");
+CREATE UNIQUE INDEX "_Liked_AB_unique" ON "_Liked"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Liked_B_index" ON "_Liked"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_Watched_AB_unique" ON "_Watched"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_Watched_B_index" ON "_Watched"("B");
 
 -- AddForeignKey
 ALTER TABLE "Chat" ADD CONSTRAINT "Chat_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -56,7 +66,13 @@ ALTER TABLE "Chat" ADD CONSTRAINT "Chat_createdById_fkey" FOREIGN KEY ("createdB
 ALTER TABLE "Post" ADD CONSTRAINT "Post_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "LikedPost" ADD CONSTRAINT "LikedPost_likedById_fkey" FOREIGN KEY ("likedById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_Liked" ADD CONSTRAINT "_Liked_A_fkey" FOREIGN KEY ("A") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "LikedPost" ADD CONSTRAINT "LikedPost_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_Liked" ADD CONSTRAINT "_Liked_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Watched" ADD CONSTRAINT "_Watched_A_fkey" FOREIGN KEY ("A") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_Watched" ADD CONSTRAINT "_Watched_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
