@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Post from "../../../data/post";
+import Notification from "../../../data/notification";
 import fs from "fs/promises";
 import { folderPath } from "./posts.upload";
 
@@ -28,9 +29,7 @@ export default {
     const postIdsToUpdate = posts
       .filter((post) => post.createdById !== userId)
       .map((post) => post.id);
-
     const alreadyWatchedPosts = await Post.getUserWatchedPosts(userId, postIdsToUpdate);
-
     const newPostIdsToUpdate = postIdsToUpdate.filter(
       (postId) => !alreadyWatchedPosts.includes(postId)
     );
@@ -40,7 +39,6 @@ export default {
     }
 
     const watchedPosts = await Post.getPosts(postIds);
-
     res.status(200).json(watchedPosts);
   },
   likedPost: async (req: Request, res: Response) => {
@@ -58,6 +56,17 @@ export default {
       res.status(200).json(updatedPost);
     } else {
       await Post.addLikeToPost(postId, userId);
+
+      const postCreatorId = post.createdBy.id;
+      if (postCreatorId !== userId) {
+        await Notification.sendLikePostNtf(
+          userId,
+          postCreatorId,
+          postId,
+          req.app.get("io")
+        );
+      }
+
       const updatedPost = await Post.getPost(postId);
       res.status(200).json(updatedPost);
     }

@@ -187,52 +187,12 @@ export default {
     return db.post.update({
       where: { id: postId },
       data: { likedBy: { connect: { id: userId } } },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-        likedBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-      },
     });
   },
   removeLikeFromPost: async (postId: string, userId: string) => {
     return db.post.update({
       where: { id: postId },
       data: { likedBy: { disconnect: { id: userId } } },
-      include: {
-        createdBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-        likedBy: {
-          select: {
-            id: true,
-            username: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-      },
     });
   },
   deletePost: async (postId: string) => {
