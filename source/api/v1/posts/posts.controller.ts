@@ -26,9 +26,7 @@ export default {
       return res.status(404).json({ msg: "Посты не найдены" });
     }
 
-    const postIdsToUpdate = posts
-      .filter((post) => post.createdById !== userId)
-      .map((post) => post.id);
+    const postIdsToUpdate = posts.map((post) => post.id);
     const alreadyWatchedPosts = await Post.getUserWatchedPosts(userId, postIdsToUpdate);
     const newPostIdsToUpdate = postIdsToUpdate.filter(
       (postId) => !alreadyWatchedPosts.includes(postId)
@@ -58,14 +56,12 @@ export default {
       await Post.addLikeToPost(postId, userId);
 
       const postCreatorId = post.createdBy.id;
-      if (postCreatorId !== userId) {
-        await Notification.sendLikePostNtf(
-          userId,
-          postCreatorId,
-          postId,
-          req.app.get("io")
-        );
-      }
+      await Notification.sendLikePostNtf(
+        userId,
+        postCreatorId,
+        postId,
+        req.app.get("io")
+      );
 
       const updatedPost = await Post.getPost(postId);
       res.status(200).json(updatedPost);

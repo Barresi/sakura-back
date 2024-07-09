@@ -1,15 +1,14 @@
 import Database from "../clients/database";
 import { Server } from "socket.io";
 import Redis from "../clients/redis";
-import { connect } from "http2";
 
 const db = Database.instance;
 const redis = Redis.instance;
 
-export const NTF_USER_SEND_FRIEND_EVENT = "ntfSendFriend";
-export const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
-export const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
-export const NTF_USER_LIKE_POST_EVENT = "ntfLikePost";
+const NTF_USER_SEND_FRIEND_EVENT = "ntfSendFriend";
+const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
+const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
+const NTF_USER_LIKE_POST_EVENT = "ntfLikePost";
 
 export default {
   getUserAllNotifications: async (userId: string) => {
@@ -102,6 +101,10 @@ export default {
     postId: string,
     io: Server
   ) => {
+    if (userId === postCreatorId) {
+      return null;
+    }
+
     const content = `${userId} понравился ваш пост`;
     const notification = {
       type: "likePost",

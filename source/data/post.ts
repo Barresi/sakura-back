@@ -10,7 +10,11 @@ type PostInput = {
 export default {
   createPost: async (post: PostInput, userId: string) => {
     return db.post.create({
-      data: { ...post, createdBy: { connect: { id: userId } } },
+      data: {
+        ...post,
+        createdBy: { connect: { id: userId } },
+        watchedBy: { connect: { id: userId } },
+      },
       include: {
         createdBy: {
           select: {
