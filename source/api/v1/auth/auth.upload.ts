@@ -5,14 +5,12 @@ import { Request } from "express";
 export const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const type = file.fieldname;
-      if (type === "avatar") {
+      if (file.fieldname === "avatar") {
         cb(null, "/app/images/avatars");
-      } else if (type === "banner") {
+      } else if (file.fieldname === "banner") {
         cb(null, "/app/images/banners");
       } else {
-        const error = new Error("Invalid file type");
-        (error as any).status = 400;
+        const error = new Error("ENOENT");
         cb(error, "images");
       }
     },
@@ -45,7 +43,6 @@ export const upload = multer({
     const extension = path.extname(file.originalname);
     if (!validTypes.includes(extension)) {
       const error = new Error("Invalid file type");
-      (error as any).status = 400;
       cb(error);
     } else {
       cb(null, true);
@@ -53,6 +50,6 @@ export const upload = multer({
   },
 
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB
+    fileSize: 2 * 1024 * 1024,
   },
 });
