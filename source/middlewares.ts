@@ -54,6 +54,13 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
     return res.status(400).json({ msg: "Неверный формат файла(ов)" });
   }
 
+  if (
+    err.message.includes("Payload Too Large") ||
+    (err instanceof CustomError && err.status === 413)
+  ) {
+    return res.status(413).json({ msg: "Превышен максимальный размер файла(ов)" });
+  }
+
   if (err.message.startsWith("ENOENT")) {
     return res.status(400).json({ msg: "Ошибка записи файла(ов)" });
   }
@@ -67,4 +74,13 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 
 export function postMiddlewares() {
   return [errorHandler];
+}
+
+class CustomError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
 }
