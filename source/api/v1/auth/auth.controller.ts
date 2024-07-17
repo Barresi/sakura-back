@@ -16,6 +16,8 @@ import {
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { NextFunction } from "express-serve-static-core";
+import { avatarFolderPath, bannerFolderPath, deleteOldFileUtility } from "./auth.upload";
+import path from "path";
 
 function capitalizeFirstLetter(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -168,22 +170,28 @@ export default {
       validateLastName(account.lastName);
     }
 
-    const files = req.files;
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    if (files && Array.isArray(files)) {
-      for (const file of files) {
-        if (file.fieldname === "avatar") {
-          account.avatar = file.filename;
-        } else if (file.fieldname === "banner") {
-          account.banner = file.filename;
+    if (files) {
+      const user = await User.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ msg: "Пользователь не найден" });
+      }
+
+      if (files.avatar) {
+        const newAvatarFile = files.avatar[0].filename;
+        if (user.avatar) {
+          deleteOldFileUtility(`${avatarFolderPath}/${userId}/${user.avatar}`);
         }
+        account.avatar = newAvatarFile;
       }
-    } else if (files && typeof files === "object") {
-      if (files["avatar"]) {
-        account.avatar = files["avatar"][0].filename;
-      }
-      if (files["banner"]) {
-        account.banner = files["banner"][0].filename;
+
+      if (files.banner) {
+        const newBannerFile = files.banner[0].filename;
+        if (user.banner) {
+          deleteOldFileUtility(`${bannerFolderPath}/${userId}/${user.banner}`);
+        }
+        account.banner = newBannerFile;
       }
     }
 
@@ -263,6 +271,13 @@ export default {
     const storedRefreshToken = await getRefreshToken(userId);
     if (storedRefreshToken) {
       await deleteRefreshToken(userId, storedRefreshToken);
+    }
+
+    if (user.avatar) {
+      deleteOldFileUtility(path.join(avatarFolderPath, userId, user.avatar));
+    }
+    if (user.banner) {
+      deleteOldFileUtility(path.join(bannerFolderPath, userId, user.banner));
     }
 
     await User.deleteUser(userId);
