@@ -153,6 +153,11 @@ export default {
     const userId = req.userId;
     const account = req.body;
 
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
+    }
+
     if (account.username) {
       validateUsername(account.username);
     }
@@ -173,11 +178,6 @@ export default {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
     if (files) {
-      const user = await User.getUserById(userId);
-      if (!user) {
-        return res.status(404).json({ msg: "Пользователь не найден" });
-      }
-
       if (files.avatar) {
         const newAvatarFile = files.avatar[0].filename;
         if (user.avatar) {
@@ -202,15 +202,15 @@ export default {
     });
 
     const updatedFields = {
-      username: updatedAccount.username,
-      firstName: updatedAccount.firstName,
-      lastName: updatedAccount.lastName,
-      city: updatedAccount.city,
-      birthDate: updatedAccount.birthDate,
-      gender: updatedAccount.gender,
-      description: updatedAccount.description,
-      avatar: account.avatar || null,
-      banner: account.banner,
+      username: updatedAccount.username ?? user.username,
+      firstName: updatedAccount.firstName ?? user.firstName,
+      lastName: updatedAccount.lastName ?? user.lastName,
+      city: updatedAccount.city ?? user.city,
+      birthDate: updatedAccount.birthDate ?? user.birthDate,
+      gender: updatedAccount.gender ?? user.gender,
+      description: updatedAccount.description ?? user.description,
+      avatar: account.avatar ?? user.avatar,
+      banner: account.banner ?? user.banner,
     };
 
     res.status(200).json({ updatedFields });
