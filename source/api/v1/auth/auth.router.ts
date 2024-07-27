@@ -2,7 +2,7 @@ import { Router } from "express";
 import ctrl from "./auth.controller";
 import wrap from "../../../api/async-wrapper";
 import guard from "../access-guard";
-import { upload } from "../../../clients/upload";
+import { upload } from "./auth.upload";
 
 const auth = Router();
 

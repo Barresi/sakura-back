@@ -1,33 +1,29 @@
 import multer from "multer";
+import { v4 as uuidv4 } from "uuid";
 import path from "path";
-import { Request } from "express";
+import createUserFolder from "./posts.folder";
+
+export const folderPath = "/app/images/posts";
 
 export const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const type = file.fieldname;
-      if (type === "avatar") {
-        cb(null, "/app/images/avatars");
-      } else if (type === "banner") {
-        cb(null, "/app/images/banners");
+      const userId = req.userId;
+      createUserFolder(userId);
+      if (file.fieldname === "pictures") {
+        cb(null, `${folderPath}/${userId}`);
       } else {
-        const error = new Error("Invalid file type");
-        (error as any).status = 400;
+        const error = new Error("ENOENT");
         cb(error, "images");
       }
     },
     filename: (req, file, cb) => {
-      const userId = req.userId;
-      const extension = path.extname(file.originalname);
-      const prefix = file.fieldname;
-      cb(null, `${prefix}-${userId}${extension}`);
+      const ext = path.extname(file.originalname);
+      const filename = uuidv4() + ext;
+      cb(null, filename);
     },
   }),
-  fileFilter: (
-    req: Request,
-    file: Express.Multer.File,
-    cb: multer.FileFilterCallback
-  ) => {
+  fileFilter: (req, file, cb) => {
     const validTypes = [
       ".apng",
       ".png",
@@ -45,14 +41,13 @@ export const upload = multer({
     const extension = path.extname(file.originalname);
     if (!validTypes.includes(extension)) {
       const error = new Error("Invalid file type");
-      (error as any).status = 400;
       cb(error);
     } else {
       cb(null, true);
     }
   },
-
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB
+    fileSize: 3 * 1024 * 1024,
+    files: 4,
   },
 });

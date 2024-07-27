@@ -40,12 +40,29 @@ export function preMiddlewares() {
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   logger.error(err);
 
-  if (err.message === "Invalid file type") {
-    return res.status(400).json({ msg: "Неверный формат файла" });
+  if (err instanceof MulterError) {
+    if (err.code === "LIMIT_FILE_COUNT") {
+      return res.status(400).json({ msg: "Превышено максимальное количество файлов" });
+    }
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({ msg: "Превышен максимальный размер файла(ов)" });
+    }
+    return res.status(400).json({ msg: "Ошибка загрузки файла(ов)" });
   }
 
-  if (err instanceof MulterError) {
-    return res.status(400).json({ msg: "Ошибка загрузки файла" });
+  if (err.message === "Invalid file type") {
+    return res.status(400).json({ msg: "Неверный формат файла(ов)" });
+  }
+
+  if (
+    err.message.includes("Payload Too Large") ||
+    (err instanceof CustomError && err.status === 413)
+  ) {
+    return res.status(413).json({ msg: "Превышен максимальный размер файла(ов)" });
+  }
+
+  if (err.message.startsWith("ENOENT")) {
+    return res.status(400).json({ msg: "Ошибка записи файла(ов)" });
   }
 
   if (err instanceof ZodError) {
@@ -57,4 +74,13 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
 
 export function postMiddlewares() {
   return [errorHandler];
+}
+
+class CustomError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
 }

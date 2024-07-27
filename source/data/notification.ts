@@ -5,44 +5,29 @@ import Redis from "../clients/redis";
 const db = Database.instance;
 const redis = Redis.instance;
 
-export const NTF_USER_SEND_FRIEND_EVENT = "ntfSendFriend";
-export const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
-export const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
+const NTF_USER_SEND_FRIEND_EVENT = "ntfSendFriend";
+const NTF_USER_ACCEPT_FRIEND_EVENT = "ntfAcceptFriend";
+const NTF_USER_REJECT_FRIEND_EVENT = "ntfRejectFriend";
+const NTF_USER_LIKE_POST_EVENT = "ntfLikePost";
 
 export default {
   getUserAllNotifications: async (userId: string) => {
     return db.notification.findMany({
-      where: {
-        recipients: {
-          some: {
-            id: userId,
-          },
-        },
-      },
+      where: { recipients: { some: { id: userId } } },
     });
   },
   getUnreadNotifications: async (userId: string) => {
     return db.notification.findMany({
       where: {
         read: false,
-        recipients: {
-          some: {
-            id: userId,
-          },
-        },
+        recipients: { some: { id: userId } },
       },
     });
   },
   markNotificationsAsRead: async (notificationIds: string[]) => {
     const updatedNotifications = await db.notification.updateMany({
-      where: {
-        id: {
-          in: notificationIds,
-        },
-      },
-      data: {
-        read: true,
-      },
+      where: { id: { in: notificationIds } },
+      data: { read: true },
     });
 
     return updatedNotifications;
@@ -104,6 +89,40 @@ export default {
     if (friendSocketId) {
       io.to(friendSocketId).emit(NTF_USER_REJECT_FRIEND_EVENT, {
         friendId: userId,
+        notificationId: createdNotification.id,
+      });
+    }
+
+    return createdNotification;
+  },
+  sendLikePostNtf: async (
+    userId: string,
+    postCreatorId: string,
+    postId: string,
+    io: Server
+  ) => {
+    if (userId === postCreatorId) {
+      return null;
+    }
+
+    const content = `${userId} понравился ваш пост`;
+    const notification = {
+      type: "likePost",
+      content,
+      read: false,
+      recipients: { connect: [{ id: postCreatorId }] },
+    };
+
+    const createdNotification = await db.notification.create({ data: notification });
+
+    const postCreatorSocketId = await redis.hget(
+      "userSockets",
+      `userId: ${postCreatorId}`
+    );
+    if (postCreatorSocketId) {
+      io.to(postCreatorSocketId).emit(NTF_USER_LIKE_POST_EVENT, {
+        postId,
+        userId,
         notificationId: createdNotification.id,
       });
     }

@@ -7,6 +7,8 @@ import {
   validateLastName,
   validateEmail,
   validatePassword,
+  validateCity,
+  validateDescription,
 } from "./auth.validation";
 import User from "../../../data/user";
 import {
@@ -16,6 +18,8 @@ import {
 } from "../../../jwt";
 import { setRefreshToken, deleteRefreshToken, getRefreshToken } from "./auth.tokens";
 import { NextFunction } from "express-serve-static-core";
+import { avatarFolderPath, bannerFolderPath, deleteOldFileUtility } from "./auth.upload";
+import path from "path";
 
 function capitalizeFirstLetter(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -69,12 +73,13 @@ export default {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      avatar: user.avatar,
+      banner: user.banner,
       city: user.city,
       birthDate: user.birthDate,
       gender: user.gender,
       description: user.description,
-      avatar: user.avatar,
-      banner: user.banner,
+      posts: user.posts,
     };
 
     res.status(200).json({ accessToken, refreshToken, userWithoutPassword });
@@ -135,12 +140,13 @@ export default {
       firstName: userInfo.firstName,
       lastName: userInfo.lastName,
       email: userInfo.email,
+      avatar: userInfo.avatar,
+      banner: userInfo.banner,
       city: userInfo.city,
       birthDate: userInfo.birthDate,
       gender: userInfo.gender,
       description: userInfo.description,
-      avatar: userInfo.avatar,
-      banner: userInfo.banner,
+      posts: userInfo.posts,
     };
 
     res.status(200).json({ user });
@@ -149,13 +155,17 @@ export default {
     const userId = req.userId;
     const account = req.body;
 
-    if (account.username) {
-      validateUsername(account.username);
+    const user = await User.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Пользователь не найден" });
     }
 
-    const existingUsername = await User.checkUsername(account.username, userId);
-    if (existingUsername) {
-      return res.status(409).json({ msg: "Этот username уже занят" });
+    if (account.username) {
+      validateUsername(account.username);
+      const existingUsername = await User.checkUsername(account.username, userId);
+      if (existingUsername) {
+        return res.status(409).json({ msg: "Этот username уже занят" });
+      }
     }
 
     if (account.firstName) {
@@ -166,22 +176,31 @@ export default {
       validateLastName(account.lastName);
     }
 
-    const files = req.files;
+    if (account.city) {
+      validateCity(account.city);
+    }
 
-    if (files && Array.isArray(files)) {
-      for (const file of files) {
-        if (file.fieldname === "avatar") {
-          account.avatar = file.filename;
-        } else if (file.fieldname === "banner") {
-          account.banner = file.filename;
+    if (account.description) {
+      validateDescription(account.description);
+    }
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    if (files) {
+      if (files.avatar) {
+        const newAvatarFile = files.avatar[0].filename;
+        if (user.avatar) {
+          deleteOldFileUtility(`${avatarFolderPath}/${userId}/${user.avatar}`);
         }
+        account.avatar = newAvatarFile;
       }
-    } else if (files && typeof files === "object") {
-      if (files["avatar"]) {
-        account.avatar = files["avatar"][0].filename;
-      }
-      if (files["banner"]) {
-        account.banner = files["banner"][0].filename;
+
+      if (files.banner) {
+        const newBannerFile = files.banner[0].filename;
+        if (user.banner) {
+          deleteOldFileUtility(`${bannerFolderPath}/${userId}/${user.banner}`);
+        }
+        account.banner = newBannerFile;
       }
     }
 
@@ -192,15 +211,15 @@ export default {
     });
 
     const updatedFields = {
-      username: updatedAccount.username,
-      firstName: updatedAccount.firstName,
-      lastName: updatedAccount.lastName,
-      city: updatedAccount.city,
-      birthDate: updatedAccount.birthDate,
-      gender: updatedAccount.gender,
-      description: updatedAccount.description,
-      avatar: account.avatar,
-      banner: account.banner,
+      username: updatedAccount.username ?? user.username,
+      firstName: updatedAccount.firstName ?? user.firstName,
+      lastName: updatedAccount.lastName ?? user.lastName,
+      city: updatedAccount.city ?? user.city,
+      birthDate: updatedAccount.birthDate ?? user.birthDate,
+      gender: updatedAccount.gender ?? user.gender,
+      description: updatedAccount.description ?? user.description,
+      avatar: account.avatar ?? user.avatar,
+      banner: account.banner ?? user.banner,
     };
 
     res.status(200).json({ updatedFields });
@@ -261,6 +280,13 @@ export default {
     const storedRefreshToken = await getRefreshToken(userId);
     if (storedRefreshToken) {
       await deleteRefreshToken(userId, storedRefreshToken);
+    }
+
+    if (user.avatar) {
+      deleteOldFileUtility(path.join(avatarFolderPath, userId, user.avatar));
+    }
+    if (user.banner) {
+      deleteOldFileUtility(path.join(bannerFolderPath, userId, user.banner));
     }
 
     await User.deleteUser(userId);

@@ -42,7 +42,7 @@ export function validateUsername(username: string) {
 
 export function validateFirstName(firstName: string) {
   const schema = z.object({
-    firstName: z.string().trim().regex(nameRegex).min(2).max(20),
+    firstName: z.string().trim().regex(nameRegex).min(2).max(10),
   });
 
   return schema.parse({ firstName });
@@ -50,8 +50,24 @@ export function validateFirstName(firstName: string) {
 
 export function validateLastName(lastName: string) {
   const schema = z.object({
-    lastName: z.string().trim().regex(nameRegex).min(2).max(20),
+    lastName: z.string().trim().regex(nameRegex).min(2).max(10),
   });
 
   return schema.parse({ lastName });
+}
+
+export function validateCity(city: string) {
+  const schema = z.object({
+    city: z.string().trim().min(2).max(20),
+  });
+
+  return schema.parse({ city });
+}
+
+export function validateDescription(description: string) {
+  const schema = z.object({
+    description: z.string().trim().max(1000),
+  });
+
+  return schema.parse({ description });
 }
