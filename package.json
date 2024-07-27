@@ -1,8 +1,7 @@
 {
-  "name": "sakura",
-  "version": "0.1.0",
+  "name": "sakura-back",
+  "version": "1.0.0",
   "description": "Social network",
-  "main": "app.ts",
   "scripts": {
     "dev": "npx nodemon source/app.ts | pino-pretty --translateTime",
     "dev:up": "docker compose up -d",
