@@ -7,6 +7,8 @@ import {
   validateLastName,
   validateEmail,
   validatePassword,
+  validateCity,
+  validateDescription,
 } from "./auth.validation";
 import User from "../../../data/user";
 import {
@@ -160,11 +162,10 @@ export default {
 
     if (account.username) {
       validateUsername(account.username);
-    }
-
-    const existingUsername = await User.checkUsername(account.username, userId);
-    if (existingUsername) {
-      return res.status(409).json({ msg: "Этот username уже занят" });
+      const existingUsername = await User.checkUsername(account.username, userId);
+      if (existingUsername) {
+        return res.status(409).json({ msg: "Этот username уже занят" });
+      }
     }
 
     if (account.firstName) {
@@ -173,6 +174,14 @@ export default {
 
     if (account.lastName) {
       validateLastName(account.lastName);
+    }
+
+    if (account.city) {
+      validateCity(account.city);
+    }
+
+    if (account.description) {
+      validateDescription(account.description);
     }
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
